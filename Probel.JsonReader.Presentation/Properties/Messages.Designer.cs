@@ -61,7 +61,178 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} hours.
+        ///   Looks up a localized string similar to (+).
+        /// </summary>
+        public static string Header_Exception {
+            get {
+                return ResourceManager.GetString("Header_Exception", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        public static string Header_Level {
+            get {
+                return ResourceManager.GetString("Header_Level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logger.
+        /// </summary>
+        public static string Header_Logger {
+            get {
+                return ResourceManager.GetString("Header_Logger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message.
+        /// </summary>
+        public static string Header_Message {
+            get {
+                return ResourceManager.GetString("Header_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thread.
+        /// </summary>
+        public static string Header_ThreadId {
+            get {
+                return ResourceManager.GetString("Header_ThreadId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time.
+        /// </summary>
+        public static string Header_Time {
+            get {
+                return ResourceManager.GetString("Header_Time", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Columns.
+        /// </summary>
+        public static string Menu_Columns {
+            get {
+                return ResourceManager.GetString("Menu_Columns", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Exception.
+        /// </summary>
+        public static string Menu_Columns_Exception {
+            get {
+                return ResourceManager.GetString("Menu_Columns_Exception", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Logger.
+        /// </summary>
+        public static string Menu_Columns_Logger {
+            get {
+                return ResourceManager.GetString("Menu_Columns_Logger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thread Id.
+        /// </summary>
+        public static string Menu_Columns_ThreadId {
+            get {
+                return ResourceManager.GetString("Menu_Columns_ThreadId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _File.
+        /// </summary>
+        public static string Menu_File {
+            get {
+                return ResourceManager.GetString("Menu_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Open....
+        /// </summary>
+        public static string Menu_File_Open {
+            get {
+                return ResourceManager.GetString("Menu_File_Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quit.
+        /// </summary>
+        public static string Menu_File_Quit {
+            get {
+                return ResourceManager.GetString("Menu_File_Quit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Filters.
+        /// </summary>
+        public static string Menu_Filters {
+            get {
+                return ResourceManager.GetString("Menu_Filters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show _Level.
+        /// </summary>
+        public static string Menu_Filters_OnLevel {
+            get {
+                return ResourceManager.GetString("Menu_Filters_OnLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Show last.
+        /// </summary>
+        public static string Menu_Filters_OnTime {
+            get {
+                return ResourceManager.GetString("Menu_Filters_OnTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sort.
+        /// </summary>
+        public static string Menu_Order {
+            get {
+                return ResourceManager.GetString("Menu_Order", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ascending.
+        /// </summary>
+        public static string Menu_Order_Asc {
+            get {
+                return ResourceManager.GetString("Menu_Order_Asc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Descending.
+        /// </summary>
+        public static string Menu_Order_Desc {
+            get {
+                return ResourceManager.GetString("Menu_Order_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last {0} hours.
         /// </summary>
         public static string MenuItem_FilterHours {
             get {
@@ -70,7 +241,7 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} minutes.
+        ///   Looks up a localized string similar to Last {0} minutes.
         /// </summary>
         public static string MenuItem_FilterMinutes {
             get {
@@ -79,7 +250,7 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No filter.
+        ///   Looks up a localized string similar to All.
         /// </summary>
         public static string MenuItem_NoFilter {
             get {

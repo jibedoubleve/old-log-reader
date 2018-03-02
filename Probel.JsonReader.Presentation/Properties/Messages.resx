@@ -117,14 +117,53 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Header_Exception" xml:space="preserve">
+    <value>(+)</value>
+  </data>
+  <data name="Header_Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="Header_Logger" xml:space="preserve">
+    <value>Logger</value>
+  </data>
+  <data name="Header_Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="Header_ThreadId" xml:space="preserve">
+    <value>Thread</value>
+  </data>
+  <data name="Header_Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
   <data name="MenuItem_FilterHours" xml:space="preserve">
-    <value>{0} hours</value>
+    <value>Last {0} hours</value>
   </data>
   <data name="MenuItem_FilterMinutes" xml:space="preserve">
-    <value>{0} minutes</value>
+    <value>Last {0} minutes</value>
   </data>
   <data name="MenuItem_NoFilter" xml:space="preserve">
-    <value>No filter</value>
+    <value>All</value>
+  </data>
+  <data name="Menu_Columns" xml:space="preserve">
+    <value>_Columns</value>
+  </data>
+  <data name="Menu_Columns_Exception" xml:space="preserve">
+    <value>_Exception</value>
+  </data>
+  <data name="Menu_Columns_Logger" xml:space="preserve">
+    <value>_Logger</value>
+  </data>
+  <data name="Menu_File" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="Menu_File_Open" xml:space="preserve">
+    <value>_Open...</value>
+  </data>
+  <data name="Menu_Filters" xml:space="preserve">
+    <value>_Filters</value>
+  </data>
+  <data name="Menu_Filters_OnTime" xml:space="preserve">
+    <value>_Show last</value>
   </data>
   <data name="Status_FileChanged" xml:space="preserve">
     <value>File changed.</value>
@@ -137,5 +176,23 @@
   </data>
   <data name="Status_xxItems" xml:space="preserve">
     <value>{0} item(s).</value>
+  </data>
+  <data name="Menu_Filters_OnLevel" xml:space="preserve">
+    <value>Show _Level</value>
+  </data>
+  <data name="Menu_File_Quit" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="Menu_Columns_ThreadId" xml:space="preserve">
+    <value>Thread Id</value>
+  </data>
+  <data name="Menu_Order" xml:space="preserve">
+    <value>Sort</value>
+  </data>
+  <data name="Menu_Order_Asc" xml:space="preserve">
+    <value>Ascending</value>
+  </data>
+  <data name="Menu_Order_Desc" xml:space="preserve">
+    <value>Descending</value>
   </data>
 </root>

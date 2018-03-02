@@ -1,4 +1,5 @@
-﻿using Prism.Mvvm;
+﻿using Microsoft.Practices.Unity;
+using Prism.Mvvm;
 using Probel.JsonReader.Business;
 using Probel.JsonReader.Business.Data;
 using Probel.JsonReader.Presentation.Helpers;
@@ -23,9 +24,10 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private readonly ILogRepository LogRepository;
         private int _filterMinutes = 0;
         private ObservableCollection<LogModel> _logs = new ObservableCollection<LogModel>();
+        private SettingsViewModel _settings;
         private string _status = Messages.Status_Ready;
-        private string _statusItemsCount;
-        private string _title;
+        private string _statusItemsCount = string.Format(Messages.Status_xxItems, 0);
+        private string _title = TITLE_PREFIX;
         private string FilePath;
         private FileSystemWatcher FileWatcher;
 
@@ -62,6 +64,13 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         public ICommand OpenCommand { get; }
 
+        [Dependency]
+        public SettingsViewModel Settings
+        {
+            get => _settings;
+            set => SetProperty(ref _settings, value, nameof(Settings));
+        }
+
         public string Status
         {
             get => _status;
@@ -88,7 +97,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         private bool CanFilter(string arg)
         {
-            var isNumber = int.TryParse(arg, out var r);
+            var isNumber = (arg == null) ? true : int.TryParse(arg, out var r);
             var hasLogs = BufferLogs != null && BufferLogs.Count() != 0;
             return isNumber && hasLogs;
         }
@@ -112,9 +121,10 @@ namespace Probel.JsonReader.Presentation.ViewModels
             if (int.TryParse(arg, out var value))
             {
                 FilterMinutes = value;
-                var logs = await BufferLogs.FilterAsync(FilterMinutes);
-                Logs = new ObservableCollection<LogModel>(logs);
             }
+
+            var logs = await BufferLogs.FilterAsync(FilterMinutes, Settings);
+            Logs = new ObservableCollection<LogModel>(logs);
             SetItemsCount();
         }
 
@@ -140,19 +150,20 @@ namespace Probel.JsonReader.Presentation.ViewModels
         {
             FilterCommand.RaiseCanExecuteChanged();
             BufferLogs = await Task.Run(() => LogRepository.GetAllLogs(FilePath));
-            FillLogs(BufferLogs.Filter(FilterMinutes));
+            FillLogs(BufferLogs.Filter(FilterMinutes, Settings));
             Status = Messages.Status_FileChanged + $" - [{DateTime.Now.ToLongTimeString()}]";
         }
 
         private async Task Open(string filePath)
         {
             FilterMinutes = 0;
-            FilterCommand.RaiseCanExecuteChanged();
             FilePath = filePath;
             BufferLogs = await Task.Run(() => LogRepository.GetAllLogs(filePath));
-            FillLogs(BufferLogs);
-            Status = Messages.Status_FileLoaded;
             ListenToFileChange();
+
+            FilterCommand.RaiseCanExecuteChanged();
+            if (CanFilter("0")) { await FilterAsync("0"); }
+            Status = Messages.Status_FileLoaded;
         }
 
         private void SetItemsCount() => StatusItemsCount = string.Format(Messages.Status_xxItems, Logs.Count);

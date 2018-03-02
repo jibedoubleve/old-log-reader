@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:conv="clr-namespace:Probel.JsonReader.Presentation.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:m="clr-namespace:Probel.JsonReader.Presentation.Properties"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"
@@ -11,21 +12,28 @@
     Width="525"
     Height="350"
     prism:ViewModelLocator.AutoWireViewModel="True"
+    Icon="/Probel.JsonReader.Presentation;component/Log.ico"
     mc:Ignorable="d">
     <Window.Resources>
         <conv:MinutesFilterToBooleanConverter x:Key="MinutesFilterToBooleanConverter" />
+        <conv:InvertBooleanConverter x:Key="InvertBooleanConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <conv:TextToVisibilityConverter x:Key="TextToVisibilityConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Menu>
-            <MenuItem Header="_File">
-                <MenuItem Click="OnOpenFile" Header="_Open..." />
+            <MenuItem Header="{x:Static m:Messages.Menu_File}">
+                <MenuItem Click="OnOpenFile" Header="{x:Static m:Messages.Menu_File_Open}" />
+                <Separator />
+                <MenuItem Click="OnQuit" Header="{x:Static m:Messages.Menu_File_Quit}" />
             </MenuItem>
-            <MenuItem Header="F_ilters">
+            <MenuItem Header="{x:Static m:Messages.Menu_Filters}">
                 <MenuItem
                     Command="{Binding FilterCommand}"
                     CommandParameter="2"
@@ -100,19 +108,164 @@
                     Header="{x:Static m:Messages.MenuItem_NoFilter}"
                     IsChecked="{Binding FilterMinutes, Converter={StaticResource MinutesFilterToBooleanConverter}, ConverterParameter=0}" />
             </MenuItem>
+            <MenuItem Header="{x:Static m:Messages.Menu_Order}">
+                <MenuItem
+                    Click="OnShowColumn"
+                    Command="{Binding FilterCommand}"
+                    Header="{x:Static m:Messages.Menu_Order_Asc}"
+                    IsChecked="{Binding Settings.IsSortAscending}" />
+                <MenuItem
+                    Click="OnShowColumn"
+                    Command="{Binding FilterCommand}"
+                    Header="{x:Static m:Messages.Menu_Order_Desc}"
+                    IsChecked="{Binding Settings.IsSortAscending, Converter={StaticResource InvertBooleanConverter}}" />
+            </MenuItem>
+            <MenuItem Header="{x:Static m:Messages.Menu_Columns}">
+                <MenuItem
+                    x:Name="IsLoggerVisible"
+                    Click="OnShowColumn"
+                    Header="{x:Static m:Messages.Menu_Columns_Logger}"
+                    IsChecked="{Binding Settings.IsLoggerVisible, UpdateSourceTrigger=PropertyChanged}" />
+                <MenuItem
+                    x:Name="IsThreadIdVisible"
+                    Click="OnShowColumn"
+                    Header="{x:Static m:Messages.Menu_Columns_ThreadId}"
+                    IsChecked="{Binding Settings.IsThreadIdVisible, UpdateSourceTrigger=PropertyChanged}" />
+            </MenuItem>
         </Menu>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <StackPanel.Resources>
+                <Style TargetType="ToggleButton">
+                    <Setter Property="Margin" Value="5,5,0,5" />
+                </Style>
+            </StackPanel.Resources>
+            <ToggleButton Command="{Binding FilterCommand}" IsChecked="{Binding Settings.ShowDebug, UpdateSourceTrigger=PropertyChanged}">
+                <iconPacks:PackIconModern Kind="Bug" />
+            </ToggleButton>
+            <ToggleButton Command="{Binding FilterCommand}" IsChecked="{Binding Settings.ShowInfo, UpdateSourceTrigger=PropertyChanged}">
+                <iconPacks:PackIconModern Kind="InformationCircle" />
+            </ToggleButton>
+            <ToggleButton Command="{Binding FilterCommand}" IsChecked="{Binding Settings.ShowWarning, UpdateSourceTrigger=PropertyChanged}">
+                <iconPacks:PackIconModern Kind="Warning" />
+            </ToggleButton>
+            <ToggleButton Command="{Binding FilterCommand}" IsChecked="{Binding Settings.ShowError, UpdateSourceTrigger=PropertyChanged}">
+                <iconPacks:PackIconModern Kind="Stop" />
+            </ToggleButton>
+            <ToggleButton Command="{Binding FilterCommand}" IsChecked="{Binding Settings.ShowFatal, UpdateSourceTrigger=PropertyChanged}">
+                <iconPacks:PackIconModern Kind="SignStop" />
+            </ToggleButton>
+        </StackPanel>
         <DataGrid
-            Grid.Row="1"
+            Grid.Row="2"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
             CanUserReorderColumns="False"
-            IsReadOnly="True"
-            ItemsSource="{Binding Logs}" />
-        <StatusBar Grid.Row="2">
+            CanUserResizeRows="False"
+            CanUserSortColumns="False"
+            ItemsSource="{Binding Logs}"
+            SelectionMode="Single">
+            <DataGrid.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
+            </DataGrid.Resources>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Level}" Value="DEBUG">
+                            <Setter Property="Background" Value="#98C379" />
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Level}" Value="INFO">
+                            <Setter Property="Background" Value="#61AFEF" />
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Level}" Value="WARN">
+                            <Setter Property="Background" Value="#D19A66" />
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Level}" Value="ERROR">
+                            <Setter Property="Background" Value="#E06C75" />
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Level}" Value="FATAL">
+                            <Setter Property="Background" Value="#E06C75" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="{x:Static m:Messages.Header_Exception}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <iconPacks:PackIconOcticons
+                                HorizontalAlignment="Center"
+                                Kind="Check"
+                                Visibility="{Binding Exception, Converter={StaticResource TextToVisibilityConverter}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding Time}"
+                    Header="{x:Static m:Messages.Header_Time}" />
+                <DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding Level}"
+                    Header="{x:Static m:Messages.Header_Level}" />
+                <DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding ThreadId}"
+                    Header="{x:Static m:Messages.Header_ThreadId}"
+                    Visibility="{Binding IsChecked, Source={x:Reference IsThreadIdVisible}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding Logger}"
+                    Header="{x:Static m:Messages.Header_Logger}"
+                    Visibility="{Binding IsChecked, Source={x:Reference IsLoggerVisible}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Message}"
+                    Header="{x:Static m:Messages.Header_Message}" />
+            </DataGrid.Columns>
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Exception}" Visibility="{Binding Exception, Converter={StaticResource TextToVisibilityConverter}}" />
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+        </DataGrid>
+        <StatusBar Grid.Row="3">
             <StatusBarItem Content="{Binding Status}" />
             <StatusBarItem
                 HorizontalAlignment="Right"
                 Content="{Binding StatusItemsCount}"
                 DockPanel.Dock="Right" />
-            <StatusBarItem />
+            <Separator Margin="5,3,5,3" DockPanel.Dock="Right" />
+            <StatusBarItem HorizontalAlignment="Right" DockPanel.Dock="Right">
+                <StatusBarItem.Style>
+                    <Style TargetType="StatusBarItem">
+                        <Setter Property="Content">
+                            <Setter.Value>
+                                <iconPacks:PackIconModern
+                                    Width="15"
+                                    Height="15"
+                                    Kind="SortNumericAscending" />
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Settings.IsSortAscending}" Value="False">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <iconPacks:PackIconModern
+                                            Width="15"
+                                            Height="15"
+                                            Kind="SortNumericDescending" />
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StatusBarItem.Style>
+            </StatusBarItem>
         </StatusBar>
     </Grid>
 </Window>

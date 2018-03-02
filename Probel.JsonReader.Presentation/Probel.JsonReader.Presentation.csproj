@@ -33,7 +33,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Log.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MahApps.Metro.IconPacks, Version=2.0.0.31, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.IconPacks.2.0.0\lib\net46\MahApps.Metro.IconPacks.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
@@ -46,6 +52,9 @@
     <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Prism, Version=6.3.0.0, Culture=neutral, PublicKeyToken=40ee6c3a2184dc59, processorArchitecture=MSIL">
       <HintPath>..\packages\Prism.Core.6.3.0\lib\net45\Prism.dll</HintPath>
     </Reference>
@@ -56,6 +65,7 @@
       <HintPath>..\packages\Prism.Wpf.6.3.0\lib\net45\Prism.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Prism.Wpf.6.3.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -83,18 +93,26 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="..\Version.cs">
+      <Link>Properties\Version.cs</Link>
+    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Constants\Enumerations.cs" />
+    <Compile Include="Converters\InvertBooleanConverter.cs" />
     <Compile Include="Converters\MinutesFilterToBooleanConverter.cs" />
+    <Compile Include="Converters\TextToVisibilityConverter.cs" />
     <Compile Include="Events\StatusEvent.cs" />
     <Compile Include="Helpers\DelegateCommandExtension.cs" />
     <Compile Include="Helpers\CommandBuilder.cs" />
     <Compile Include="Helpers\CommandExtensions.cs" />
+    <Compile Include="Services\ConfigurationService.cs" />
+    <Compile Include="Services\SerialisationService.cs" />
     <Compile Include="Services\StatusService.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
@@ -133,6 +151,9 @@
       <Project>{223bf894-38be-42df-8649-a5b898b16bd4}</Project>
       <Name>Probel.JsonReader.Business</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Log.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

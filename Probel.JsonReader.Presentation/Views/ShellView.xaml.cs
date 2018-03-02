@@ -3,6 +3,7 @@ using Probel.JsonReader.Presentation.Helpers;
 using Probel.JsonReader.Presentation.Properties;
 using Probel.JsonReader.Presentation.ViewModels;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Probel.JsonReader.Presentation.Views
 {
@@ -44,5 +45,15 @@ namespace Probel.JsonReader.Presentation.Views
         }
 
         #endregion Methods
+
+        private void OnShowColumn(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem mi)
+            {
+                mi.IsChecked = !mi.IsChecked;
+            }
+        }
+
+        private void OnQuit(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
     }
 }

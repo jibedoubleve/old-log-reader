@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Probel.JsonReader.Presentat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Probel.JsonReader.Business", "Probel.JsonReader.Business\Probel.JsonReader.Business.csproj", "{223BF894-38BE-42DF-8649-A5B898B16BD4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".sln", ".sln", "{AAE670AD-2BEF-4808-9222-0B08411D24DA}"
+	ProjectSection(SolutionItems) = preProject
+		Version.cs = Version.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

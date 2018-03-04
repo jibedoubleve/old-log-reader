@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -28,7 +29,9 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private string _status = Messages.Status_Ready;
         private string _statusItemsCount = string.Format(Messages.Status_xxItems, 0);
         private string _title = TITLE_PREFIX;
+        private string _version;
         private string FilePath;
+
         private FileSystemWatcher FileWatcher;
 
         #endregion Fields
@@ -37,6 +40,9 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         public ShellViewModel(ILogRepository logRepository, ICommandBuilder commandBuilder)
         {
+            var v = Assembly.GetEntryAssembly().GetName().Version;
+            Version = string.Format(Messages.Status_Version, v.ToString(3));
+
             LogRepository = logRepository;
             DefaultDirectory = Environment.ExpandEnvironmentVariables(DEFAULT_DIRECTORY);
 
@@ -87,6 +93,12 @@ namespace Probel.JsonReader.Presentation.ViewModels
         {
             get => _title;
             set => SetProperty(ref _title, $"{TITLE_PREFIX} - [{value}]", nameof(Title));
+        }
+
+        public string Version
+        {
+            get => _version;
+            set => SetProperty(ref _version, value, nameof(Version));
         }
 
         private IEnumerable<LogModel> BufferLogs { get; set; }

@@ -286,6 +286,15 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to V {0}.
+        /// </summary>
+        public static string Status_Version {
+            get {
+                return ResourceManager.GetString("Status_Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} item(s)..
         /// </summary>
         public static string Status_xxItems {

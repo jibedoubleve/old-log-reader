@@ -195,4 +195,7 @@
   <data name="Menu_Order_Desc" xml:space="preserve">
     <value>Descending</value>
   </data>
+  <data name="Status_Version" xml:space="preserve">
+    <value>V {0}</value>
+  </data>
 </root>

@@ -120,6 +120,9 @@ namespace Probel.JsonReader.Presentation.Services
             get; set;
         }
 
+        [JsonProperty]
+        public bool IsSortAscending { get; set; }
+
         #endregion Properties
 
         public void Fill(SettingsViewModel vm)
@@ -131,6 +134,7 @@ namespace Probel.JsonReader.Presentation.Services
             vm.ShowWarning = ShowWarning;
             vm.ShowError = ShowError;
             vm.ShowFatal = ShowFatal;
+            vm.IsSortAscending = IsSortAscending;
         }
     }
 }

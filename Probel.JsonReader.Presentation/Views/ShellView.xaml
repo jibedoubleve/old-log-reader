@@ -162,6 +162,7 @@
             CanUserReorderColumns="False"
             CanUserResizeRows="False"
             CanUserSortColumns="False"
+            GridLinesVisibility="Horizontal"
             ItemsSource="{Binding Logs}"
             SelectionMode="Single">
             <DataGrid.Resources>
@@ -235,6 +236,11 @@
         </DataGrid>
         <StatusBar Grid.Row="3">
             <StatusBarItem Content="{Binding Status}" />
+            <StatusBarItem
+                HorizontalAlignment="Right"
+                Content="{Binding Version}"
+                DockPanel.Dock="Right" />
+            <Separator Margin="5,3,5,3" DockPanel.Dock="Right" />
             <StatusBarItem
                 HorizontalAlignment="Right"
                 Content="{Binding StatusItemsCount}"

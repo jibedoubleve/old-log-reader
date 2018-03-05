@@ -17,6 +17,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private bool _showError = true;
         private bool _showFatal = true;
         private bool _showInfo = true;
+        private bool _showTrace;
         private bool _showWarning = true;
 
         #endregion Fields
@@ -73,6 +74,12 @@ namespace Probel.JsonReader.Presentation.ViewModels
         {
             get => _showInfo;
             set => SetProperty(ref _showInfo, value, nameof(ShowInfo));
+        }
+
+        public bool ShowTrace
+        {
+            get => _showTrace;
+            set => SetProperty(ref _showTrace, value, nameof(ShowTrace));
         }
 
         public bool ShowWarning

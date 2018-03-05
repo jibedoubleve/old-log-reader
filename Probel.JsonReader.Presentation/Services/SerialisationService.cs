@@ -85,6 +85,9 @@ namespace Probel.JsonReader.Presentation.Services
         }
 
         [JsonProperty]
+        public bool IsSortAscending { get; set; }
+
+        [JsonProperty]
         public bool IsThreadIdVisible
         {
             get; set;
@@ -115,15 +118,17 @@ namespace Probel.JsonReader.Presentation.Services
         }
 
         [JsonProperty]
+        public bool ShowTrace { get; set; }
+
+        [JsonProperty]
         public bool ShowWarning
         {
             get; set;
         }
 
-        [JsonProperty]
-        public bool IsSortAscending { get; set; }
-
         #endregion Properties
+
+        #region Methods
 
         public void Fill(SettingsViewModel vm)
         {
@@ -132,9 +137,12 @@ namespace Probel.JsonReader.Presentation.Services
             vm.ShowDebug = ShowDebug;
             vm.ShowInfo = ShowInfo;
             vm.ShowWarning = ShowWarning;
+            vm.ShowTrace = ShowTrace;
             vm.ShowError = ShowError;
             vm.ShowFatal = ShowFatal;
             vm.IsSortAscending = IsSortAscending;
         }
+
+        #endregion Methods
     }
 }

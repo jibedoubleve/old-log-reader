@@ -4,6 +4,7 @@
     {
         #region Properties
 
+        bool ShowTrace { get; }
         bool ShowDebug { get; }
         bool ShowError { get; }
         bool ShowFatal { get; }

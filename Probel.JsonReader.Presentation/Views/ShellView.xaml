@@ -139,6 +139,9 @@
                     <Setter Property="Margin" Value="5,5,0,5" />
                 </Style>
             </StackPanel.Resources>
+            <ToggleButton Command="{Binding FilterCommand}" IsChecked="{Binding Settings.ShowTrace, UpdateSourceTrigger=PropertyChanged}">
+                <iconPacks:PackIconModern Kind="Eye" />
+            </ToggleButton>
             <ToggleButton Command="{Binding FilterCommand}" IsChecked="{Binding Settings.ShowDebug, UpdateSourceTrigger=PropertyChanged}">
                 <iconPacks:PackIconModern Kind="Bug" />
             </ToggleButton>
@@ -164,14 +167,41 @@
             CanUserSortColumns="False"
             GridLinesVisibility="Horizontal"
             ItemsSource="{Binding Logs}"
-            SelectionMode="Single">
+            SelectionMode="Single" HorizontalGridLinesBrush="#0C000000" VerticalGridLinesBrush="#82000000" IsReadOnly="True">
             <DataGrid.Resources>
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                <ResourceDictionary>
+                    <Style x:Key="{x:Type DataGridCell}" TargetType="{x:Type DataGridCell}">
+                        <Setter Property="Background" Value="{x:Null}" />
+                        <Setter Property="BorderBrush" Value="{x:Null}" />
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{x:Null}" />
+                                <Setter Property="Foreground" Value="{x:Static SystemColors.ControlTextBrush}"/>
+                                <Setter Property="BorderBrush" Value="{x:Null}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="{x:Type DataGridRow}">
+                        <Setter Property="Background" Value="{x:Null}" />
+                        <Setter Property="BorderBrush" Value="{x:Null}" />
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{x:Null}" />
+                                <Setter Property="BorderBrush" Value="{x:Null}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ResourceDictionary>
+                <!--<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                 <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextColorKey}" Color="Transparent" />-->
             </DataGrid.Resources>
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding Level}" Value="TRACE">
+                            <Setter Property="Background" Value="#66C678DD"/>
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding Level}" Value="DEBUG">
                             <Setter Property="Background" Value="#98C379" />
                         </DataTrigger>

@@ -12,6 +12,7 @@ namespace Probel.JsonReader.Business.Data
         public static IEnumerable<LogModel> Filter(this IEnumerable<LogModel> models, int minutes, IFilter filter)
         {
             var levels = new List<string>();
+            if (filter.ShowTrace) { levels.Add("TRACE"); }
             if (filter.ShowDebug) { levels.Add("DEBUG"); }
             if (filter.ShowInfo) { levels.Add("INFO"); }
             if (filter.ShowWarning) { levels.Add("WARN"); }

@@ -165,9 +165,14 @@
             CanUserReorderColumns="False"
             CanUserResizeRows="False"
             CanUserSortColumns="False"
+            FontFamily="Consolas"
+            FontSize="11"
             GridLinesVisibility="Horizontal"
+            HorizontalGridLinesBrush="#0C000000"
+            IsReadOnly="True"
             ItemsSource="{Binding Logs}"
-            SelectionMode="Single" HorizontalGridLinesBrush="#0C000000" VerticalGridLinesBrush="#82000000" IsReadOnly="True">
+            SelectionMode="Single"
+            VerticalGridLinesBrush="#82000000">
             <DataGrid.Resources>
                 <ResourceDictionary>
                     <Style x:Key="{x:Type DataGridCell}" TargetType="{x:Type DataGridCell}">
@@ -176,7 +181,7 @@
                         <Style.Triggers>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="{x:Null}" />
-                                <Setter Property="Foreground" Value="{x:Static SystemColors.ControlTextBrush}"/>
+                                <Setter Property="Foreground" Value="{x:Static SystemColors.ControlTextBrush}" />
                                 <Setter Property="BorderBrush" Value="{x:Null}" />
                             </Trigger>
                         </Style.Triggers>
@@ -192,15 +197,12 @@
                         </Style.Triggers>
                     </Style>
                 </ResourceDictionary>
-                <!--<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
-                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextColorKey}" Color="Transparent" />-->
             </DataGrid.Resources>
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Level}" Value="TRACE">
-                            <Setter Property="Background" Value="#66C678DD"/>
+                            <Setter Property="Background" Value="#66C678DD" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Level}" Value="DEBUG">
                             <Setter Property="Background" Value="#98C379" />

@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Log Reader"
-#define MyAppVersion "1.1.1"
+#define MyAppVersion "1.2.0"
 #define MyAppPublisher "Probel"
 #define MyAppURL "http://www.probel.xyz"
 #define MyAppExeName "Probel.JsonReader.Presentation.exe"

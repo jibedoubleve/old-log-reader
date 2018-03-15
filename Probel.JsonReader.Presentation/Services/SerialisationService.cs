@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using Probel.JsonReader.Presentation.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 
 namespace Probel.JsonReader.Presentation.Services
@@ -126,6 +128,7 @@ namespace Probel.JsonReader.Presentation.Services
             get; set;
         }
 
+        public IEnumerable<string> FileHistory { get; set; }
         #endregion Properties
 
         #region Methods
@@ -141,6 +144,9 @@ namespace Probel.JsonReader.Presentation.Services
             vm.ShowError = ShowError;
             vm.ShowFatal = ShowFatal;
             vm.IsSortAscending = IsSortAscending;
+
+            vm.FileHistory.Clear();
+            vm.FileHistory.AddRange(FileHistory);
         }
 
         #endregion Methods

@@ -168,6 +168,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         private async Task Open(string filePath)
         {
+            AddFileInHistory(filePath);
             FilterMinutes = 0;
             FilePath = filePath;
             BufferLogs = await Task.Run(() => LogRepository.GetAllLogs(filePath));
@@ -176,6 +177,15 @@ namespace Probel.JsonReader.Presentation.ViewModels
             FilterCommand.RaiseCanExecuteChanged();
             if (CanFilter("0")) { await FilterAsync("0"); }
             Status = Messages.Status_FileLoaded;
+        }
+
+        private void AddFileInHistory(string filePath)
+        {
+            var doubloon = (from f in Settings.FileHistory
+                            where f == filePath
+                            select f).Count() > 0;
+
+            if (!doubloon) { Settings.FileHistory.Add(filePath);}
         }
 
         private void SetItemsCount() => StatusItemsCount = string.Format(Messages.Status_xxItems, Logs.Count);

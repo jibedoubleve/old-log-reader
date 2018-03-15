@@ -259,6 +259,15 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file you want to load do not exist..
+        /// </summary>
+        public static string Message_FileNotExist {
+            get {
+                return ResourceManager.GetString("Message_FileNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File changed..
         /// </summary>
         public static string Status_FileChanged {

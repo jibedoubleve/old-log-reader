@@ -13,6 +13,7 @@
     Height="350"
     prism:ViewModelLocator.AutoWireViewModel="True"
     Icon="/Probel.JsonReader.Presentation;component/Log.ico"
+    Loaded="OnWindowLoad"
     mc:Ignorable="d">
     <Window.Resources>
         <conv:MinutesFilterToBooleanConverter x:Key="MinutesFilterToBooleanConverter" />
@@ -28,10 +29,11 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Menu>
-            <MenuItem Header="{x:Static m:Messages.Menu_File}">
-                <MenuItem Click="OnOpenFile" Header="{x:Static m:Messages.Menu_File_Open}" />
+            <MenuItem x:Name="FileMenu" Header="{x:Static m:Messages.Menu_File}">
+                <MenuItem Click="OnFileMenuOpenMenu" Header="{x:Static m:Messages.Menu_File_Open}" />
                 <Separator />
-                <MenuItem Click="OnQuit" Header="{x:Static m:Messages.Menu_File_Quit}" />
+                <Separator />
+                <MenuItem Click="OnFileMenuQuitMenu" Header="{x:Static m:Messages.Menu_File_Quit}" />
             </MenuItem>
             <MenuItem Header="{x:Static m:Messages.Menu_Filters}">
                 <MenuItem

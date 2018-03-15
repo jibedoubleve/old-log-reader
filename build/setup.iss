@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Log Reader"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.2.0"
 #define MyAppPublisher "Probel"
 #define MyAppURL "http://www.probel.xyz"
 #define MyAppExeName "Probel.JsonReader.Presentation.exe"
@@ -14,7 +14,7 @@
 AppId={{F5333FE3-B2ED-47EA-A5BE-BD9380D2F524}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -22,7 +22,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
 OutputDir=D:\Release\log-reader
-OutputBaseFilename=logreader.setup
+OutputBaseFilename=logreader.{#MyAppVersion}.setup
 Compression=lzma
 SolidCompression=yes
 

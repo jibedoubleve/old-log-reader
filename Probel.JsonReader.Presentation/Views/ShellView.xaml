@@ -13,6 +13,7 @@
     Height="350"
     prism:ViewModelLocator.AutoWireViewModel="True"
     Icon="/Probel.JsonReader.Presentation;component/Log.ico"
+    Loaded="OnWindowLoad"
     mc:Ignorable="d">
     <Window.Resources>
         <conv:MinutesFilterToBooleanConverter x:Key="MinutesFilterToBooleanConverter" />
@@ -28,10 +29,11 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Menu>
-            <MenuItem Header="{x:Static m:Messages.Menu_File}">
-                <MenuItem Click="OnOpenFile" Header="{x:Static m:Messages.Menu_File_Open}" />
+            <MenuItem x:Name="FileMenu" Header="{x:Static m:Messages.Menu_File}">
+                <MenuItem Click="OnFileMenuOpenMenu" Header="{x:Static m:Messages.Menu_File_Open}" />
                 <Separator />
-                <MenuItem Click="OnQuit" Header="{x:Static m:Messages.Menu_File_Quit}" />
+                <Separator />
+                <MenuItem Click="OnFileMenuQuitMenu" Header="{x:Static m:Messages.Menu_File_Quit}" />
             </MenuItem>
             <MenuItem Header="{x:Static m:Messages.Menu_Filters}">
                 <MenuItem
@@ -165,9 +167,14 @@
             CanUserReorderColumns="False"
             CanUserResizeRows="False"
             CanUserSortColumns="False"
+            FontFamily="Consolas"
+            FontSize="11"
             GridLinesVisibility="Horizontal"
+            HorizontalGridLinesBrush="#0C000000"
+            IsReadOnly="True"
             ItemsSource="{Binding Logs}"
-            SelectionMode="Single" HorizontalGridLinesBrush="#0C000000" VerticalGridLinesBrush="#82000000" IsReadOnly="True">
+            SelectionMode="Single"
+            VerticalGridLinesBrush="#82000000">
             <DataGrid.Resources>
                 <ResourceDictionary>
                     <Style x:Key="{x:Type DataGridCell}" TargetType="{x:Type DataGridCell}">
@@ -176,7 +183,7 @@
                         <Style.Triggers>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="{x:Null}" />
-                                <Setter Property="Foreground" Value="{x:Static SystemColors.ControlTextBrush}"/>
+                                <Setter Property="Foreground" Value="{x:Static SystemColors.ControlTextBrush}" />
                                 <Setter Property="BorderBrush" Value="{x:Null}" />
                             </Trigger>
                         </Style.Triggers>
@@ -192,15 +199,12 @@
                         </Style.Triggers>
                     </Style>
                 </ResourceDictionary>
-                <!--<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
-                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextColorKey}" Color="Transparent" />-->
             </DataGrid.Resources>
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Level}" Value="TRACE">
-                            <Setter Property="Background" Value="#66C678DD"/>
+                            <Setter Property="Background" Value="#66C678DD" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Level}" Value="DEBUG">
                             <Setter Property="Background" Value="#98C379" />

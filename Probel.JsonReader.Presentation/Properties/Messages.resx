@@ -198,4 +198,7 @@
   <data name="Status_Version" xml:space="preserve">
     <value>V {0}</value>
   </data>
+  <data name="Message_FileNotExist" xml:space="preserve">
+    <value>The file you want to load do not exist.</value>
+  </data>
 </root>

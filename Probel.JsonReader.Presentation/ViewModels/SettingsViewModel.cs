@@ -1,7 +1,11 @@
-﻿using Prism.Mvvm;
+﻿using Microsoft.Practices.Unity;
+using Prism.Mvvm;
 using Probel.JsonReader.Business.Data;
 using Probel.JsonReader.Presentation.Services;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Probel.JsonReader.Presentation.ViewModels
 {
@@ -9,30 +13,43 @@ namespace Probel.JsonReader.Presentation.ViewModels
     {
         #region Fields
 
-        private readonly ISerialisationService SerialisationService;
         private bool _isLoggerVisible = false;
+
         private bool _isSortAscending = false;
+
         private bool _isThreadIdVisible = false;
+
         private bool _showDebug = true;
+
         private bool _showError = true;
+
         private bool _showFatal = true;
+
         private bool _showInfo = true;
+
         private bool _showTrace;
+
         private bool _showWarning = true;
 
         #endregion Fields
 
         #region Constructors
 
-        public SettingsViewModel(ISerialisationService serialisationService)
+        public SettingsViewModel()
         {
-            SerialisationService = serialisationService;
-            PropertyChanged += OnSave;
+            FileHistory = new ObservableCollection<string>();
+            PropertyChanged += OnPropertyChanged;
+            FileHistory.CollectionChanged += OnCollectionChanged;
         }
 
         #endregion Constructors
 
         #region Properties
+
+        public ObservableCollection<string> FileHistory
+        {
+            get;
+        }
 
         public bool IsLoggerVisible
         {
@@ -51,6 +68,9 @@ namespace Probel.JsonReader.Presentation.ViewModels
             get => _isThreadIdVisible;
             set => SetProperty(ref _isThreadIdVisible, value, nameof(IsThreadIdVisible));
         }
+
+        [Dependency]
+        public ISerialisationService SerialisationService { get; set; }
 
         public bool ShowDebug
         {
@@ -92,7 +112,21 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         #region Methods
 
-        private void OnSave(object sender, PropertyChangedEventArgs e) => SerialisationService.Serialise(this);
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            SerialisationService.Serialise(this);
+        }
+
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var count = FileHistory.Count();
+            if (count > 5)
+            {
+                for (var i = 0; i < count - 5; i++) { FileHistory.RemoveAt(i); }
+            }
+
+            SerialisationService.Serialise(this);
+        }
 
         #endregion Methods
     }

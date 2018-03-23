@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Log Reader"
-#define MyAppVersion "1.2.0"
+#define MyAppVersion "1.3.0"
 #define MyAppPublisher "Probel"
 #define MyAppURL "http://www.probel.xyz"
 #define MyAppExeName "Probel.JsonReader.Presentation.exe"
@@ -34,34 +34,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Probel.JsonReader.Presentation.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\CsvHelper.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\CsvHelper.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\MahApps.Metro.IconPacks.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\MahApps.Metro.IconPacks.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\MahApps.Metro.IconPacks.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Microsoft.Practices.ServiceLocation.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Microsoft.Practices.ServiceLocation.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Microsoft.Practices.ServiceLocation.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Microsoft.Practices.Unity.Configuration.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Microsoft.Practices.Unity.Configuration.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Microsoft.Practices.Unity.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Microsoft.Practices.Unity.RegistrationByConvention.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Microsoft.Practices.Unity.RegistrationByConvention.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Microsoft.Practices.Unity.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Newtonsoft.Json.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Prism.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Prism.Unity.Wpf.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Prism.Unity.Wpf.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Prism.Wpf.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Prism.Wpf.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Prism.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Probel.JsonReader.Business.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Probel.JsonReader.Business.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Probel.JsonReader.Presentation.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Probel.JsonReader.Presentation.exe.config"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Probel.JsonReader.Presentation.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\System.Windows.Interactivity.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

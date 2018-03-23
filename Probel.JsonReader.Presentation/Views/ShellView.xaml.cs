@@ -61,7 +61,6 @@ namespace Probel.JsonReader.Presentation.Views
                 mi.IsChecked = !mi.IsChecked;
             }
         }
-
         private async void OnWindowLoad(object sender, RoutedEventArgs e)
         {
             await ViewModel.Load();

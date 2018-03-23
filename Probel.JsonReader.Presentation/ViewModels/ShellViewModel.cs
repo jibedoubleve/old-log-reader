@@ -207,6 +207,15 @@ namespace Probel.JsonReader.Presentation.ViewModels
             Status = Messages.Status_FileLoaded;
         }
 
+        private void AddFileInHistory(string filePath)
+        {
+            var doubloon = (from f in Settings.FileHistory
+                            where f == filePath
+                            select f).Count() > 0;
+
+            if (!doubloon) { Settings.FileHistory.Add(filePath);}
+        }
+
         private void SetItemsCount() => StatusItemsCount = string.Format(Messages.Status_xxItems, Logs.Count);
 
         #endregion Methods

@@ -20,22 +20,40 @@
         <conv:InvertBooleanConverter x:Key="InvertBooleanConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <conv:TextToVisibilityConverter x:Key="TextToVisibilityConverter" />
+        <conv:StringToOneLinerConverter x:Key="StringToOneLinerConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
+            <RowDefinition Height="5" />
+            <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Menu>
             <MenuItem x:Name="FileMenu" Header="{x:Static m:Messages.Menu_File}">
                 <MenuItem Click="OnFileMenuOpenMenu" Header="{x:Static m:Messages.Menu_File_Open}" />
-                <Separator />
+                <MenuItem
+                    x:Name="_buttonHistory"
+                    Click="OnClickHistory"
+                    Header="{x:Static m:Messages.Menu_File_History}" />
                 <Separator />
                 <MenuItem Click="OnFileMenuQuitMenu" Header="{x:Static m:Messages.Menu_File_Quit}" />
             </MenuItem>
             <MenuItem Header="{x:Static m:Messages.Menu_Filters}">
+                <MenuItem
+                    Command="{Binding FilterCommand}"
+                    CommandParameter="0.5"
+                    Header="0.5"
+                    HeaderStringFormat="{x:Static m:Messages.MenuItem_FilterLastMinute}"
+                    IsChecked="{Binding FilterMinutes, Converter={StaticResource MinutesFilterToBooleanConverter}, ConverterParameter=0.5}" />
+                <MenuItem
+                    Command="{Binding FilterCommand}"
+                    CommandParameter="1"
+                    Header="1"
+                    HeaderStringFormat="{x:Static m:Messages.MenuItem_FilterLastMinute}"
+                    IsChecked="{Binding FilterMinutes, Converter={StaticResource MinutesFilterToBooleanConverter}, ConverterParameter=1}" />
                 <MenuItem
                     Command="{Binding FilterCommand}"
                     CommandParameter="2"
@@ -60,49 +78,6 @@
                     Header="30"
                     HeaderStringFormat="{x:Static m:Messages.MenuItem_FilterMinutes}"
                     IsChecked="{Binding FilterMinutes, Converter={StaticResource MinutesFilterToBooleanConverter}, ConverterParameter=30}" />
-                <Separator />
-                <MenuItem
-                    Command="{Binding FilterCommand}"
-                    CommandParameter="60"
-                    Header="1"
-                    HeaderStringFormat="{x:Static m:Messages.MenuItem_FilterHours}"
-                    IsChecked="{Binding FilterMinutes, Converter={StaticResource MinutesFilterToBooleanConverter}, ConverterParameter=60}" />
-                <MenuItem
-                    Command="{Binding FilterCommand}"
-                    CommandParameter="120"
-                    Header="2"
-                    HeaderStringFormat="{x:Static m:Messages.MenuItem_FilterHours}"
-                    IsChecked="{Binding FilterMinutes, Converter={StaticResource MinutesFilterToBooleanConverter}, ConverterParameter=120}" />
-                <MenuItem
-                    Command="{Binding FilterCommand}"
-                    CommandParameter="180"
-                    Header="3"
-                    HeaderStringFormat="{x:Static m:Messages.MenuItem_FilterHours}"
-                    IsChecked="{Binding FilterMinutes, Converter={StaticResource MinutesFilterToBooleanConverter}, ConverterParameter=180}" />
-                <MenuItem
-                    Command="{Binding FilterCommand}"
-                    CommandParameter="240"
-                    Header="4"
-                    HeaderStringFormat="{x:Static m:Messages.MenuItem_FilterHours}"
-                    IsChecked="{Binding FilterMinutes, Converter={StaticResource MinutesFilterToBooleanConverter}, ConverterParameter=240}" />
-                <MenuItem
-                    Command="{Binding FilterCommand}"
-                    CommandParameter="300"
-                    Header="5"
-                    HeaderStringFormat="{x:Static m:Messages.MenuItem_FilterHours}"
-                    IsChecked="{Binding FilterMinutes, Converter={StaticResource MinutesFilterToBooleanConverter}, ConverterParameter=300}" />
-                <MenuItem
-                    Command="{Binding FilterCommand}"
-                    CommandParameter="360"
-                    Header="6"
-                    HeaderStringFormat="{x:Static m:Messages.MenuItem_FilterHours}"
-                    IsChecked="{Binding FilterMinutes, Converter={StaticResource MinutesFilterToBooleanConverter}, ConverterParameter=360}" />
-                <MenuItem
-                    Command="{Binding FilterCommand}"
-                    CommandParameter="720"
-                    Header="12"
-                    HeaderStringFormat="{x:Static m:Messages.MenuItem_FilterHours}"
-                    IsChecked="{Binding FilterMinutes, Converter={StaticResource MinutesFilterToBooleanConverter}, ConverterParameter=720}" />
                 <Separator />
                 <MenuItem
                     Command="{Binding FilterCommand}"
@@ -161,6 +136,7 @@
             </ToggleButton>
         </StackPanel>
         <DataGrid
+            x:Name="Grid"
             Grid.Row="2"
             AutoGenerateColumns="False"
             CanUserAddRows="False"
@@ -184,6 +160,7 @@
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="{x:Null}" />
                                 <Setter Property="Foreground" Value="{x:Static SystemColors.ControlTextBrush}" />
+                                <Setter Property="FontWeight" Value="ExtraBold" />
                                 <Setter Property="BorderBrush" Value="{x:Null}" />
                             </Trigger>
                         </Style.Triggers>
@@ -204,32 +181,33 @@
                 <Style TargetType="DataGridRow">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Level}" Value="TRACE">
-                            <Setter Property="Background" Value="#66C678DD" />
+                            <Setter Property="Background" Value="{DynamicResource LogTraceColour}" />
                         </DataTrigger>
+
                         <DataTrigger Binding="{Binding Level}" Value="DEBUG">
-                            <Setter Property="Background" Value="#98C379" />
+                            <Setter Property="Background" Value="{DynamicResource LogDebugColour}" />
                         </DataTrigger>
 
                         <DataTrigger Binding="{Binding Level}" Value="INFO">
-                            <Setter Property="Background" Value="#61AFEF" />
+                            <Setter Property="Background" Value="{DynamicResource LogInfoColour}" />
                         </DataTrigger>
 
                         <DataTrigger Binding="{Binding Level}" Value="WARN">
-                            <Setter Property="Background" Value="#D19A66" />
+                            <Setter Property="Background" Value="{DynamicResource LogWarnColour}" />
                         </DataTrigger>
 
                         <DataTrigger Binding="{Binding Level}" Value="ERROR">
-                            <Setter Property="Background" Value="#E06C75" />
+                            <Setter Property="Background" Value="{DynamicResource LogErrorColour}" />
                         </DataTrigger>
 
                         <DataTrigger Binding="{Binding Level}" Value="FATAL">
-                            <Setter Property="Background" Value="#E06C75" />
+                            <Setter Property="Background" Value="{DynamicResource LogFatalColour}" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="{x:Static m:Messages.Header_Exception}">
+                <DataGridTemplateColumn Header="{x:Static m:Messages.Header_PlusSign}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <iconPacks:PackIconOcticons
@@ -259,16 +237,79 @@
                     Visibility="{Binding IsChecked, Source={x:Reference IsLoggerVisible}, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <DataGridTextColumn
                     Width="*"
-                    Binding="{Binding Message}"
+                    Binding="{Binding Message, Converter={StaticResource StringToOneLinerConverter}}"
                     Header="{x:Static m:Messages.Header_Message}" />
             </DataGrid.Columns>
-            <DataGrid.RowDetailsTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Exception}" Visibility="{Binding Exception, Converter={StaticResource TextToVisibilityConverter}}" />
-                </DataTemplate>
-            </DataGrid.RowDetailsTemplate>
         </DataGrid>
-        <StatusBar Grid.Row="3">
+        <GridSplitter
+            Grid.Row="3"
+            Height="5"
+            HorizontalAlignment="Stretch" />
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Label Grid.RowSpan="2" Margin="5">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=Grid, Path=SelectedItem.Level}" Value="TRACE">
+                                <Setter Property="Background" Value="{DynamicResource LogTraceColour}" />
+                            </DataTrigger>
+
+                            <DataTrigger Binding="{Binding ElementName=Grid, Path=SelectedItem.Level}" Value="DEBUG">
+                                <Setter Property="Background" Value="{DynamicResource LogDebugColour}" />
+                            </DataTrigger>
+
+                            <DataTrigger Binding="{Binding ElementName=Grid, Path=SelectedItem.Level}" Value="INFO">
+                                <Setter Property="Background" Value="{DynamicResource LogInfoColour}" />
+                            </DataTrigger>
+
+                            <DataTrigger Binding="{Binding ElementName=Grid, Path=SelectedItem.Level}" Value="WARN">
+                                <Setter Property="Background" Value="{DynamicResource LogWarnColour}" />
+                            </DataTrigger>
+
+                            <DataTrigger Binding="{Binding ElementName=Grid, Path=SelectedItem.Level}" Value="ERROR">
+                                <Setter Property="Background" Value="{DynamicResource LogErrorColour}" />
+                            </DataTrigger>
+
+                            <DataTrigger Binding="{Binding ElementName=Grid, Path=SelectedItem.Level}" Value="FATAL">
+                                <Setter Property="Background" Value="{DynamicResource LogFatalColour}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="75" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <GroupBox Header="{x:Static m:Messages.Header_Message}">
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                        <TextBlock
+                            FontFamily="Consolas"
+                            FontSize="11"
+                            Text="{Binding ElementName=Grid, Path=SelectedItem.Message}" />
+                    </ScrollViewer>
+                </GroupBox>
+                <GridSplitter
+                    Grid.Row="1"
+                    Height="5"
+                    HorizontalAlignment="Stretch" />
+                <GroupBox Grid.Row="2" Header="{x:Static m:Messages.Header_Exception}">
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                        <TextBlock
+                            FontFamily="Consolas"
+                            FontSize="11"
+                            Text="{Binding ElementName=Grid, Path=SelectedItem.Exception}" />
+                    </ScrollViewer>
+                </GroupBox>
+            </Grid>
+        </Grid>
+        <StatusBar Grid.Row="5">
             <StatusBarItem Content="{Binding Status}" />
             <StatusBarItem
                 HorizontalAlignment="Right"

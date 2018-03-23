@@ -55,6 +55,9 @@
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.4.13\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="Prism, Version=6.3.0.0, Culture=neutral, PublicKeyToken=40ee6c3a2184dc59, processorArchitecture=MSIL">
       <HintPath>..\packages\Prism.Core.6.3.0\lib\net45\Prism.dll</HintPath>
     </Reference>
@@ -104,12 +107,14 @@
     <Compile Include="Constants\Enumerations.cs" />
     <Compile Include="Converters\InvertBooleanConverter.cs" />
     <Compile Include="Converters\MinutesFilterToBooleanConverter.cs" />
+    <Compile Include="Converters\StringToOneLinerConverter.cs" />
     <Compile Include="Converters\TextToVisibilityConverter.cs" />
     <Compile Include="Events\StatusEvent.cs" />
     <Compile Include="Helpers\DelegateCommandExtension.cs" />
     <Compile Include="Helpers\CommandBuilder.cs" />
     <Compile Include="Helpers\CommandExtensions.cs" />
     <Compile Include="Services\ConfigurationService.cs" />
+    <Compile Include="Services\LogService.cs" />
     <Compile Include="Services\SerialisationService.cs" />
     <Compile Include="Services\StatusService.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
@@ -137,6 +142,9 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

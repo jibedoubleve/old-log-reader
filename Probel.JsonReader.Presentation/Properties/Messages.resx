@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Header_Exception" xml:space="preserve">
-    <value>(+)</value>
+    <value>Exception</value>
   </data>
   <data name="Header_Level" xml:space="preserve">
     <value>Level</value>
@@ -200,5 +200,14 @@
   </data>
   <data name="Message_FileNotExist" xml:space="preserve">
     <value>The file you want to load do not exist.</value>
+  </data>
+  <data name="Menu_File_History" xml:space="preserve">
+    <value>Last files</value>
+  </data>
+  <data name="MenuItem_FilterLastMinute" xml:space="preserve">
+    <value>Last {0} minute</value>
+  </data>
+  <data name="Header_PlusSign" xml:space="preserve">
+    <value>(+)</value>
   </data>
 </root>

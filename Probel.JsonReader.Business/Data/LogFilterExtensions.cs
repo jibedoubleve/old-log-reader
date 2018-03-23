@@ -9,7 +9,7 @@ namespace Probel.JsonReader.Business.Data
     {
         #region Methods
 
-        public static IEnumerable<LogModel> Filter(this IEnumerable<LogModel> models, int minutes, IFilter filter)
+        public static IEnumerable<LogModel> Filter(this IEnumerable<LogModel> models, decimal minutes, IFilter filter)
         {
             var levels = new List<string>();
             if (filter.ShowTrace) { levels.Add("TRACE"); }
@@ -30,18 +30,19 @@ namespace Probel.JsonReader.Business.Data
             }
             else
             {
+                var seconds = (long)(minutes * 60);
                 result = (from l in models
-                          where (now - l.Time).TotalMinutes <= minutes
+                          where (now - l.Time).TotalSeconds <= seconds
                              && levels.Contains(l.Level)
                           select l).ToList();
             }
-            return (filter.IsSortAscending) 
-                ? result.OrderBy(e => e.Time) 
+            return (filter.IsSortAscending)
+                ? result.OrderBy(e => e.Time)
                 : result.OrderByDescending(e => e.Time);
         }
 
-        public static async Task<IEnumerable<LogModel>> FilterAsync(this IEnumerable<LogModel> models, int minutes, IFilter filter)
-        {
+        public static async Task<IEnumerable<LogModel>> FilterAsync(this IEnumerable<LogModel> models, decimal minutes, IFilter filter)
+        {            
             return await Task.Run(() => Filter(models, minutes, filter));
         }
 

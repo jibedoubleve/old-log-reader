@@ -61,7 +61,7 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (+).
+        ///   Looks up a localized string similar to Exception.
         /// </summary>
         public static string Header_Exception {
             get {
@@ -93,6 +93,15 @@ namespace Probel.JsonReader.Presentation.Properties {
         public static string Header_Message {
             get {
                 return ResourceManager.GetString("Header_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (+).
+        /// </summary>
+        public static string Header_PlusSign {
+            get {
+                return ResourceManager.GetString("Header_PlusSign", resourceCulture);
             }
         }
         
@@ -156,6 +165,15 @@ namespace Probel.JsonReader.Presentation.Properties {
         public static string Menu_File {
             get {
                 return ResourceManager.GetString("Menu_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last files.
+        /// </summary>
+        public static string Menu_File_History {
+            get {
+                return ResourceManager.GetString("Menu_File_History", resourceCulture);
             }
         }
         
@@ -237,6 +255,15 @@ namespace Probel.JsonReader.Presentation.Properties {
         public static string MenuItem_FilterHours {
             get {
                 return ResourceManager.GetString("MenuItem_FilterHours", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last {0} minute.
+        /// </summary>
+        public static string MenuItem_FilterLastMinute {
+            get {
+                return ResourceManager.GetString("MenuItem_FilterLastMinute", resourceCulture);
             }
         }
         

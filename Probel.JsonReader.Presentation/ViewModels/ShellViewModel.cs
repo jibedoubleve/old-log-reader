@@ -4,9 +4,11 @@ using Probel.JsonReader.Business;
 using Probel.JsonReader.Business.Data;
 using Probel.JsonReader.Presentation.Helpers;
 using Probel.JsonReader.Presentation.Properties;
+using Probel.JsonReader.Presentation.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -23,7 +25,9 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private const string DEFAULT_DIRECTORY = @"%appdata%\Probel\Perdeval\Logs\";
         private const string TITLE_PREFIX = "Log reader";
         private readonly ILogRepository LogRepository;
-        private int _filterMinutes = 0;
+        private decimal _filterMinutes = 0;
+        private readonly IFormatProvider _formatProvider = new CultureInfo("en-US");
+        private readonly ILogService _logger;
         private ObservableCollection<LogModel> _logs = new ObservableCollection<LogModel>();
         private SettingsViewModel _settings;
         private string _status = Messages.Status_Ready;
@@ -38,8 +42,9 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         #region Constructors
 
-        public ShellViewModel(ILogRepository logRepository, ICommandBuilder commandBuilder)
+        public ShellViewModel(ILogRepository logRepository, ICommandBuilder commandBuilder, ILogService logger)
         {
+            _logger = logger;
             var v = Assembly.GetEntryAssembly().GetName().Version;
             Version = string.Format(Messages.Status_Version, v.ToString(3));
 
@@ -56,7 +61,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         public ICommand FilterCommand { get; }
 
-        public int FilterMinutes
+        public decimal FilterMinutes
         {
             get => _filterMinutes;
             set => SetProperty(ref _filterMinutes, value, nameof(FilterMinutes));
@@ -107,9 +112,32 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         #region Methods
 
+        public async Task Load()
+        {
+            var lastFile = Settings.FileHistory.OrderBy(e => e).Last();
+            if (File.Exists(lastFile))
+            {
+                _logger.Debug($"Load last opened file. Path: '{lastFile}'");
+                await Open(lastFile);
+                Title = lastFile;
+                //RaisePropertyChanged(nameof(Title));
+            }
+            else { _logger.Warn($"Cannot load last opened file. Path: '{(lastFile ?? "<empty>")}'"); }
+
+        }
+
+        private void AddFileInHistory(string filePath)
+        {
+            var doubloon = (from f in Settings.FileHistory
+                            where f == filePath
+                            select f).Count() > 0;
+
+            if (!doubloon) { Settings.FileHistory.Add(filePath); }
+        }
+
         private bool CanFilter(string arg)
         {
-            var isNumber = (arg == null) ? true : int.TryParse(arg, out var r);
+            var isNumber = (arg == null) ? true : decimal.TryParse(arg, NumberStyles.AllowDecimalPoint, _formatProvider, out var r);
             var hasLogs = BufferLogs != null && BufferLogs.Count() != 0;
             return isNumber && hasLogs;
         }
@@ -130,7 +158,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private async Task FilterAsync(string arg)
         {
             var now = DateTime.Now;
-            if (int.TryParse(arg, out var value))
+            if (decimal.TryParse(arg, NumberStyles.AllowDecimalPoint, _formatProvider, out var value))
             {
                 FilterMinutes = value;
             }

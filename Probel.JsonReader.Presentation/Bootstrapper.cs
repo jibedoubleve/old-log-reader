@@ -4,7 +4,6 @@ using Probel.JsonReader.Business;
 using Probel.JsonReader.Business.Data;
 using Probel.JsonReader.Presentation.Helpers;
 using Probel.JsonReader.Presentation.Services;
-using Probel.JsonReader.Presentation.ViewModels;
 using Probel.JsonReader.Presentation.Views;
 using System.Windows;
 
@@ -23,6 +22,7 @@ namespace Probel.JsonReader.Presentation
             Container.RegisterType<ICommandBuilder, DelegateCommandBuilder>();
             Container.RegisterType<IConfigurationService, ConfigurationService>();
             Container.RegisterType<ISerialisationService, SerialisationService>();
+            Container.RegisterType<ILogService, NLogService>();
 
             var vm = Container.Resolve<ISerialisationService>();
             Container.RegisterInstance(vm.DeserialiseSettings());

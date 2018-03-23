@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Probel.JsonReader.Presentation.Helpers;
 using Probel.JsonReader.Presentation.Properties;
+using Probel.JsonReader.Presentation.Services;
 using Probel.JsonReader.Presentation.ViewModels;
 using System.IO;
 using System.Linq;
@@ -14,10 +15,12 @@ namespace Probel.JsonReader.Presentation.Views
     /// </summary>
     public partial class ShellView : Window
     {
+        private readonly ILogService _logger;
         #region Constructors
 
-        public ShellView()
+        public ShellView(ILogService logger)
         {
+            _logger = logger;
             InitializeComponent();
         }
 
@@ -30,6 +33,8 @@ namespace Probel.JsonReader.Presentation.Views
         #endregion Properties
 
         #region Methods
+
+        private void OnClickHistory(object sender, RoutedEventArgs e) => RefreshFileHistory();
 
         private void OnFileMenuOpenMenu(object sender, RoutedEventArgs e)
         {
@@ -56,8 +61,11 @@ namespace Probel.JsonReader.Presentation.Views
                 mi.IsChecked = !mi.IsChecked;
             }
         }
-
-        private void OnWindowLoad(object sender, RoutedEventArgs e) => RefreshFileHistory();
+        private async void OnWindowLoad(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.Load();
+            RefreshFileHistory();
+        }
 
         private void OpenFile(string path)
         {
@@ -69,6 +77,7 @@ namespace Probel.JsonReader.Presentation.Views
             }
             else
             {
+                _logger.Warn($"Cannot open the logs. File '{path}' does not exist.");
                 var msg = Messages.Message_FileNotExist;
                 MessageBox.Show(msg, "Attention", MessageBoxButton.OK, MessageBoxImage.Warning);
 
@@ -85,18 +94,15 @@ namespace Probel.JsonReader.Presentation.Views
 
         private void RefreshFileHistory()
         {
-            var to = FileMenu.Items.Cast<object>().Count() - 3;
-            for (var i = 2; i <= to; i++)
+            _buttonHistory.Items.Clear();
+            var history = ViewModel.Settings.FileHistory.OrderBy(i => i).ToList();
+
+            for (var i = 0; i < history.Count(); i++)
             {
-                var item = FileMenu.Items.Cast<object>().ElementAt(2);
-                if (item is MenuItem mi) { mi.Click -= OnMenuClick; }
-                FileMenu.Items.RemoveAt(2);
-            }
-            foreach (var path in ViewModel.Settings.FileHistory)
-            {
-                var menu = new MenuItem() { Header = path };
-                menu.Click += OnMenuClick;
-                FileMenu.Items.Insert(2, menu);
+                var btn = new MenuItem() { Header = history[i] };
+                btn.Click += OnMenuClick;
+
+                _buttonHistory.Items.Insert(i, btn);
             }
         }
 

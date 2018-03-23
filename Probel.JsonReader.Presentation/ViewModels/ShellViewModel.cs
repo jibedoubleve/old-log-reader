@@ -126,14 +126,6 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         }
 
-        private void AddFileInHistory(string filePath)
-        {
-            var doubloon = (from f in Settings.FileHistory
-                            where f == filePath
-                            select f).Count() > 0;
-
-            if (!doubloon) { Settings.FileHistory.Add(filePath); }
-        }
 
         private bool CanFilter(string arg)
         {

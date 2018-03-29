@@ -3,6 +3,7 @@ using Probel.JsonReader.Presentation.Helpers;
 using Probel.JsonReader.Presentation.Properties;
 using Probel.JsonReader.Presentation.Services;
 using Probel.JsonReader.Presentation.ViewModels;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -33,6 +34,7 @@ namespace Probel.JsonReader.Presentation.Views
 
         #region Properties
 
+        private string LastestFile { get; set; }
         private ShellViewModel ViewModel => DataContext as ShellViewModel;
 
         #endregion Properties
@@ -49,7 +51,9 @@ namespace Probel.JsonReader.Presentation.Views
                                   where m.IsChecked == true
                                   select (string)m.Header).ToList();
 
-                ViewModel.FilterCategories(categories);
+                ViewModel.RefillCategories(categories);
+
+                ViewModel.FilterCommand.TryExecute(ViewModel.FilterMinutes.ToString());
             }
         }
 
@@ -73,6 +77,19 @@ namespace Probel.JsonReader.Presentation.Views
 
         private void OnMenuClick(object sender, RoutedEventArgs e) => OpenFile((sender as MenuItem).Header.ToString());
 
+        private void OnOpenInExplorer(object sender, RoutedEventArgs e)
+        {
+            var lastFile = ViewModel.GetLastFile();
+            var dir = string.Empty;
+
+            dir = (File.Exists(lastFile))
+                ? Path.GetDirectoryName(lastFile)
+                : Path.GetDirectoryName(LastestFile);
+
+            if (Directory.Exists(dir)) { Process.Start(dir); }
+            else { _logger.Warn($"Directory '{dir}' does not exist."); }
+        }
+
         private void OnShowColumn(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem mi)
@@ -91,6 +108,7 @@ namespace Probel.JsonReader.Presentation.Views
         {
             if (File.Exists(path))
             {
+                LastestFile = path;
                 ViewModel.Title = path;
                 await ViewModel.OpenFileAsync(path);
                 Refresh();
@@ -112,6 +130,12 @@ namespace Probel.JsonReader.Presentation.Views
             }
         }
 
+        private void Refresh()
+        {
+            RefreshFileHistory();
+            RefreshCategories();
+        }
+
         private void RefreshCategories()
         {
             _menuCategories.Items.Clear();
@@ -129,11 +153,7 @@ namespace Probel.JsonReader.Presentation.Views
                 _menuCategories.Items.Insert(i, btn);
             }
         }
-        private void Refresh()
-        {
-            RefreshFileHistory();
-            RefreshCategories();
-        }
+
         private void RefreshFileHistory()
         {
             _menuHistory.Items.Clear();
@@ -154,10 +174,8 @@ namespace Probel.JsonReader.Presentation.Views
 
             //_menuHistory.Items.Insert(++i, btn_all);
             //_menuHistory.Items.Insert(++i, btn_none);
-
         }
 
         #endregion Methods
-
     }
 }

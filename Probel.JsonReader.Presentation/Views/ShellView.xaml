@@ -111,12 +111,18 @@
                     IsChecked="{Binding Settings.IsThreadIdVisible, UpdateSourceTrigger=PropertyChanged}" />
             </MenuItem>
         </Menu>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <StackPanel.Resources>
+        <DockPanel Grid.Row="1" LastChildFill="False">
+            <DockPanel.Resources>
                 <Style TargetType="ToggleButton">
                     <Setter Property="Margin" Value="5,5,0,5" />
                 </Style>
-            </StackPanel.Resources>
+            </DockPanel.Resources>
+            <Button
+                Margin="20,5,5,5"
+                HorizontalContentAlignment="Right"
+                Click="OnOpenInExplorer"
+                Content="{x:Static m:Messages.Button_OpenDirectory}"
+                DockPanel.Dock="Right" />
             <ToggleButton Command="{Binding FilterCommand}" IsChecked="{Binding Settings.ShowTrace, UpdateSourceTrigger=PropertyChanged}">
                 <iconPacks:PackIconModern Kind="Eye" />
             </ToggleButton>
@@ -135,7 +141,7 @@
             <ToggleButton Command="{Binding FilterCommand}" IsChecked="{Binding Settings.ShowFatal, UpdateSourceTrigger=PropertyChanged}">
                 <iconPacks:PackIconModern Kind="SignStop" />
             </ToggleButton>
-        </StackPanel>
+        </DockPanel>
         <DataGrid
             x:Name="Grid"
             Grid.Row="2"

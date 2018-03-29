@@ -124,6 +124,33 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to C_ategories.
+        /// </summary>
+        public static string Menu_Categories {
+            get {
+                return ResourceManager.GetString("Menu_Categories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string Menu_Category_All {
+            get {
+                return ResourceManager.GetString("Menu_Category_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        public static string Menu_Category_None {
+            get {
+                return ResourceManager.GetString("Menu_Category_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Columns.
         /// </summary>
         public static string Menu_Columns {

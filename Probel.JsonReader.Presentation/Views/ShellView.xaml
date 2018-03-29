@@ -35,7 +35,7 @@
             <MenuItem x:Name="FileMenu" Header="{x:Static m:Messages.Menu_File}">
                 <MenuItem Click="OnFileMenuOpenMenu" Header="{x:Static m:Messages.Menu_File_Open}" />
                 <MenuItem
-                    x:Name="_buttonHistory"
+                    x:Name="_menuHistory"
                     Click="OnClickHistory"
                     Header="{x:Static m:Messages.Menu_File_History}" />
                 <Separator />
@@ -85,6 +85,7 @@
                     Header="{x:Static m:Messages.MenuItem_NoFilter}"
                     IsChecked="{Binding FilterMinutes, Converter={StaticResource MinutesFilterToBooleanConverter}, ConverterParameter=0}" />
             </MenuItem>
+            <MenuItem x:Name="_menuCategories" Header="{x:Static m:Messages.Menu_Categories}" />
             <MenuItem Header="{x:Static m:Messages.Menu_Order}">
                 <MenuItem
                     Click="OnShowColumn"

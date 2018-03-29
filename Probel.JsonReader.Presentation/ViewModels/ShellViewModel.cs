@@ -67,6 +67,8 @@ namespace Probel.JsonReader.Presentation.ViewModels
             set => SetProperty(ref _filterMinutes, value, nameof(FilterMinutes));
         }
 
+        internal void FilterCategories(IEnumerable<string> categories) => FillLogs(BufferLogs.Filter(categories, Settings));
+
         public ObservableCollection<LogModel> Logs
         {
             get => _logs;
@@ -74,6 +76,8 @@ namespace Probel.JsonReader.Presentation.ViewModels
         }
 
         public ICommand OpenCommand { get; }
+
+        internal async Task OpenFileAsync(string path) => await Task.Run(() => Open(path));
 
         [Dependency]
         public SettingsViewModel Settings
@@ -126,6 +130,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         }
 
+        internal IEnumerable<string> GetCategories() => BufferLogs.GetCategories();
 
         private bool CanFilter(string arg)
         {
@@ -205,7 +210,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
                             where f == filePath
                             select f).Count() > 0;
 
-            if (!doubloon) { Settings.FileHistory.Add(filePath);}
+            if (!doubloon) { Settings.FileHistory.Add(filePath); }
         }
 
         private void SetItemsCount() => StatusItemsCount = string.Format(Messages.Status_xxItems, Logs.Count);

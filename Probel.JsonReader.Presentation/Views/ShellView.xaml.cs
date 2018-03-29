@@ -15,7 +15,12 @@ namespace Probel.JsonReader.Presentation.Views
     /// </summary>
     public partial class ShellView : Window
     {
+        #region Fields
+
         private readonly ILogService _logger;
+
+        #endregion Fields
+
         #region Constructors
 
         public ShellView(ILogService logger)
@@ -34,7 +39,21 @@ namespace Probel.JsonReader.Presentation.Views
 
         #region Methods
 
-        private void OnClickHistory(object sender, RoutedEventArgs e) => RefreshFileHistory();
+        private void OnCategoryClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem mi)
+            {
+                mi.IsChecked = !mi.IsChecked;
+
+                var categories = (from m in _menuCategories.Items.Cast<MenuItem>()
+                                  where m.IsChecked == true
+                                  select (string)m.Header).ToList();
+
+                ViewModel.FilterCategories(categories);
+            }
+        }
+
+        private void OnClickHistory(object sender, RoutedEventArgs e) => Refresh();
 
         private void OnFileMenuOpenMenu(object sender, RoutedEventArgs e)
         {
@@ -61,19 +80,20 @@ namespace Probel.JsonReader.Presentation.Views
                 mi.IsChecked = !mi.IsChecked;
             }
         }
+
         private async void OnWindowLoad(object sender, RoutedEventArgs e)
         {
             await ViewModel.Load();
-            RefreshFileHistory();
+            Refresh();
         }
 
-        private void OpenFile(string path)
+        private async void OpenFile(string path)
         {
             if (File.Exists(path))
             {
                 ViewModel.Title = path;
-                ViewModel.OpenCommand.TryExecute(path);
-                RefreshFileHistory();
+                await ViewModel.OpenFileAsync(path);
+                Refresh();
             }
             else
             {
@@ -87,25 +107,57 @@ namespace Probel.JsonReader.Presentation.Views
                 if (toRemove != null)
                 {
                     ViewModel.Settings.FileHistory.Remove(toRemove);
-                    RefreshFileHistory();
+                    Refresh();
                 }
             }
         }
 
+        private void RefreshCategories()
+        {
+            _menuCategories.Items.Clear();
+            var categories = ViewModel.GetCategories();
+
+            for (var i = 0; i < categories.Count(); i++)
+            {
+                var btn = new MenuItem()
+                {
+                    Header = categories.ElementAt(i),
+                    IsChecked = true
+                };
+                btn.Click += OnCategoryClick;
+
+                _menuCategories.Items.Insert(i, btn);
+            }
+        }
+        private void Refresh()
+        {
+            RefreshFileHistory();
+            RefreshCategories();
+        }
         private void RefreshFileHistory()
         {
-            _buttonHistory.Items.Clear();
-            var history = ViewModel.Settings.FileHistory.OrderBy(i => i).ToList();
+            _menuHistory.Items.Clear();
+            var history = ViewModel.Settings.FileHistory.OrderBy(h => h).ToList();
+            var i = 0;
 
-            for (var i = 0; i < history.Count(); i++)
+            for (i = 0; i < history.Count(); i++)
             {
                 var btn = new MenuItem() { Header = history[i] };
                 btn.Click += OnMenuClick;
 
-                _buttonHistory.Items.Insert(i, btn);
+                _menuHistory.Items.Insert(i, btn);
             }
+
+            //var btn_all = new MenuItem() { Header = Messages.Menu_Category_All };
+
+            //var btn_none = new MenuItem() { Header = Messages.Menu_Category_None };
+
+            //_menuHistory.Items.Insert(++i, btn_all);
+            //_menuHistory.Items.Insert(++i, btn_none);
+
         }
 
         #endregion Methods
+
     }
 }

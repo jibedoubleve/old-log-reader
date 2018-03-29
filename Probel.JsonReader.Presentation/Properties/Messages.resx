@@ -210,4 +210,13 @@
   <data name="Header_PlusSign" xml:space="preserve">
     <value>(+)</value>
   </data>
+  <data name="Menu_Categories" xml:space="preserve">
+    <value>C_ategories</value>
+  </data>
+  <data name="Menu_Category_All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Menu_Category_None" xml:space="preserve">
+    <value>None</value>
+  </data>
 </root>

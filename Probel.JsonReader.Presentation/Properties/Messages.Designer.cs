@@ -61,6 +61,15 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open directory.
+        /// </summary>
+        public static string Button_OpenDirectory {
+            get {
+                return ResourceManager.GetString("Button_OpenDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exception.
         /// </summary>
         public static string Header_Exception {

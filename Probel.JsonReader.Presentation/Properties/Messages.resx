@@ -219,4 +219,7 @@
   <data name="Menu_Category_None" xml:space="preserve">
     <value>None</value>
   </data>
+  <data name="Button_OpenDirectory" xml:space="preserve">
+    <value>Open directory</value>
+  </data>
 </root>

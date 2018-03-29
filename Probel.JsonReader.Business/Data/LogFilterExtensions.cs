@@ -63,11 +63,6 @@ namespace Probel.JsonReader.Business.Data
                 : result.OrderByDescending(e => e.Time);
         }
 
-        public static async Task<IEnumerable<LogModel>> FilterAsync(this IEnumerable<LogModel> models, decimal minutes, IFilter filter)
-        {
-            return await Task.Run(() => Filter(models, minutes, filter));
-        }
-
         #endregion Methods
     }
 }

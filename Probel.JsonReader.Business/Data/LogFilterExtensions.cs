@@ -11,6 +11,7 @@ namespace Probel.JsonReader.Business.Data
 
         public static IEnumerable<string> GetCategories(this IEnumerable<LogModel> models)
         {
+            if (models == null) { return new List<string>(); }
             var result = (from m in models select m.Logger)
                 .OrderBy(e => e)
                 .Distinct()

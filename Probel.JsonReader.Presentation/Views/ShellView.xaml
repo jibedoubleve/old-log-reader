@@ -297,9 +297,16 @@
                 <GroupBox Header="{x:Static m:Messages.Header_Message}">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto">
                         <TextBlock
+                            x:Name="tbMessage"
                             FontFamily="Consolas"
                             FontSize="11"
-                            Text="{Binding ElementName=Grid, Path=SelectedItem.Message}" />
+                            Text="{Binding ElementName=Grid, Path=SelectedItem.Message}">
+                            <TextBlock.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Click="OnSaveExceptionInClipboard" Header="Copy message on clipboard" />
+                                </ContextMenu>
+                            </TextBlock.ContextMenu>
+                        </TextBlock>
                     </ScrollViewer>
                 </GroupBox>
                 <GridSplitter
@@ -309,9 +316,16 @@
                 <GroupBox Grid.Row="2" Header="{x:Static m:Messages.Header_Exception}">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto">
                         <TextBlock
+                            x:Name="tbException"
                             FontFamily="Consolas"
                             FontSize="11"
-                            Text="{Binding ElementName=Grid, Path=SelectedItem.Exception}" />
+                            Text="{Binding ElementName=Grid, Path=SelectedItem.Exception}">
+                            <TextBlock.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Click="OnSaveMessageInClipboard" Header="Copy exception in clipboard" />
+                                </ContextMenu>
+                            </TextBlock.ContextMenu>
+                        </TextBlock>
                     </ScrollViewer>
                 </GroupBox>
             </Grid>

@@ -90,6 +90,18 @@ namespace Probel.JsonReader.Presentation.Views
             else { _logger.Warn($"Directory '{dir}' does not exist."); }
         }
 
+        private void OnSaveExceptionInClipboard(object sender, RoutedEventArgs e)
+        {
+            var txt = tbException.Text;
+            Clipboard.SetText(txt);
+        }
+
+        private void OnSaveMessageInClipboard(object sender, RoutedEventArgs e)
+        {
+            var txt = tbMessage.Text;
+            Clipboard.SetText(txt);
+        }
+
         private void OnShowColumn(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem mi)
@@ -167,13 +179,6 @@ namespace Probel.JsonReader.Presentation.Views
 
                 _menuHistory.Items.Insert(i, btn);
             }
-
-            //var btn_all = new MenuItem() { Header = Messages.Menu_Category_All };
-
-            //var btn_none = new MenuItem() { Header = Messages.Menu_Category_None };
-
-            //_menuHistory.Items.Insert(++i, btn_all);
-            //_menuHistory.Items.Insert(++i, btn_none);
         }
 
         #endregion Methods

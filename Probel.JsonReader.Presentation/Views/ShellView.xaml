@@ -303,7 +303,7 @@
                             Text="{Binding ElementName=Grid, Path=SelectedItem.Message}">
                             <TextBlock.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Click="OnSaveExceptionInClipboard" Header="Copy message on clipboard" />
+                                    <MenuItem Click="OnSaveMessageInClipboard" Header="Copy message to clipboard" />
                                 </ContextMenu>
                             </TextBlock.ContextMenu>
                         </TextBlock>
@@ -322,7 +322,7 @@
                             Text="{Binding ElementName=Grid, Path=SelectedItem.Exception}">
                             <TextBlock.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Click="OnSaveMessageInClipboard" Header="Copy exception in clipboard" />
+                                    <MenuItem Click="OnSaveExceptionInClipboard" Header="Copy exception to clipboard" />
                                 </ContextMenu>
                             </TextBlock.ContextMenu>
                         </TextBlock>

@@ -92,6 +92,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Views\DatabaseView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -115,10 +119,15 @@
     <Compile Include="Helpers\CommandExtensions.cs" />
     <Compile Include="Services\ConfigurationService.cs" />
     <Compile Include="Services\LogService.cs" />
+    <Compile Include="Services\LogRepositoryFactory.cs" />
     <Compile Include="Services\SerialisationService.cs" />
     <Compile Include="Services\StatusService.cs" />
+    <Compile Include="ViewModels\DatabaseViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="Views\DatabaseView.xaml.cs">
+      <DependentUpon>DatabaseView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -155,6 +164,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Probel.JsonReader.Business.Oracle\Probel.JsonReader.Business.Oracle.csproj">
+      <Project>{00014886-784A-43A0-89F6-054C48ED6AE6}</Project>
+      <Name>Probel.JsonReader.Business.Oracle</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Probel.JsonReader.Business\Probel.JsonReader.Business.csproj">
       <Project>{223bf894-38be-42df-8649-a5b898b16bd4}</Project>
       <Name>Probel.JsonReader.Business</Name>

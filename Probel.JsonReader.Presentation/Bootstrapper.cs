@@ -18,8 +18,8 @@ namespace Probel.JsonReader.Presentation
             base.ConfigureContainer();
 
             Container.RegisterType<IStatusService, StatusService>();
-            Container.RegisterType<ILogRepository, LogRepository>();
             Container.RegisterType<ICommandBuilder, DelegateCommandBuilder>();
+            Container.RegisterType<ILogRepositoryFactory, LogRepositoryFactory>();
             Container.RegisterType<IConfigurationService, ConfigurationService>();
             Container.RegisterType<ISerialisationService, SerialisationService>();
             Container.RegisterType<ILogService, NLogService>();

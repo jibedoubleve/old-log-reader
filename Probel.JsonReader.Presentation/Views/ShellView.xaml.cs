@@ -1,13 +1,16 @@
 ﻿using Microsoft.Win32;
+using Probel.JsonReader.Presentation.Constants;
 using Probel.JsonReader.Presentation.Helpers;
 using Probel.JsonReader.Presentation.Properties;
 using Probel.JsonReader.Presentation.Services;
 using Probel.JsonReader.Presentation.ViewModels;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Probel.JsonReader.Presentation.Views
 {
@@ -18,6 +21,7 @@ namespace Probel.JsonReader.Presentation.Views
     {
         #region Fields
 
+        private const int CS_LENTH = 120;
         private readonly ILogService _logger;
 
         #endregion Fields
@@ -34,7 +38,7 @@ namespace Probel.JsonReader.Presentation.Views
 
         #region Properties
 
-        private string LastestFile { get; set; }
+        private string LatestFile { get; set; }
         private ShellViewModel ViewModel => DataContext as ShellViewModel;
 
         #endregion Properties
@@ -61,21 +65,30 @@ namespace Probel.JsonReader.Presentation.Views
 
         private void OnFileMenuOpenMenu(object sender, RoutedEventArgs e)
         {
-            var ofd = new OpenFileDialog()
+            //Refactore this.It smells pattern to be applied ;-)
+            bool? result = null;
+            string path = null;
+
+            if (ViewModel.Settings.RepositoryType == RepositoryType.Csv)
             {
-                InitialDirectory = ViewModel.DefaultDirectory
-            };
-            var result = ofd.ShowDialog();
-            if (result.HasValue && result.Value)
-            {
-                OpenFile(ofd.FileName);
+                var ofd = new OpenFileDialog { InitialDirectory = ViewModel.DefaultDirectory };
+                result = ofd.ShowDialog();
+                path = ofd.FileName;
             }
+            else if (ViewModel.Settings.RepositoryType == RepositoryType.OracleDatabase)
+            {
+                var view = new DatabaseView { Owner = this };
+                result = view.ShowDialog();
+                path = view.ConnectionString;
+            }
+
+            if (result.HasValue && result.Value) { OpenFile(path); }
             else { ViewModel.Status = Messages.Status_Ready; }
         }
 
         private void OnFileMenuQuitMenu(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
 
-        private void OnMenuClick(object sender, RoutedEventArgs e) => OpenFile((sender as MenuItem).Header.ToString());
+        private void OnMenuClick(object sender, RoutedEventArgs e) => OpenFile((sender as MenuItem).Tag.ToString());
 
         private void OnOpenInExplorer(object sender, RoutedEventArgs e)
         {
@@ -84,7 +97,7 @@ namespace Probel.JsonReader.Presentation.Views
 
             dir = (File.Exists(lastFile))
                 ? Path.GetDirectoryName(lastFile)
-                : Path.GetDirectoryName(LastestFile);
+                : Path.GetDirectoryName(LatestFile);
 
             if (Directory.Exists(dir)) { Process.Start(dir); }
             else { _logger.Warn($"Directory '{dir}' does not exist."); }
@@ -102,6 +115,20 @@ namespace Probel.JsonReader.Presentation.Views
             Clipboard.SetText(txt);
         }
 
+        private void OnSelectCsvSource(object sender, RoutedEventArgs e)
+        {
+            ViewModel.SetMode(RepositoryType.Csv);
+            BtnOpenDir.Visibility = Visibility.Visible;
+            RefreshSource();
+        }
+
+        private void OnSelectOracleDbSource(object sender, RoutedEventArgs e)
+        {
+            ViewModel.SetMode(RepositoryType.OracleDatabase);
+            BtnOpenDir.Visibility = Visibility.Collapsed;
+            RefreshSource();
+        }
+
         private void OnShowColumn(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem mi)
@@ -112,33 +139,69 @@ namespace Probel.JsonReader.Presentation.Views
 
         private async void OnWindowLoad(object sender, RoutedEventArgs e)
         {
+            BtnOpenDir.Visibility = (ViewModel.Settings.RepositoryType == RepositoryType.Csv)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
             await ViewModel.Load();
+
             Refresh();
         }
 
         private async void OpenFile(string path)
         {
-            if (File.Exists(path))
+            Mouse.OverrideCursor = Cursors.Wait;
+            if (ViewModel.Settings.RepositoryType == RepositoryType.Csv)
             {
-                LastestFile = path;
-                ViewModel.Title = path;
-                await ViewModel.OpenFileAsync(path);
-                Refresh();
-            }
-            else
-            {
-                _logger.Warn($"Cannot open the logs. File '{path}' does not exist.");
-                var msg = Messages.Message_FileNotExist;
-                MessageBox.Show(msg, "Attention", MessageBoxButton.OK, MessageBoxImage.Warning);
-
-                var toRemove = (from f in ViewModel.Settings.FileHistory
-                                where f == path
-                                select f).FirstOrDefault();
-                if (toRemove != null)
+                if (File.Exists(path))
                 {
-                    ViewModel.Settings.FileHistory.Remove(toRemove);
+                    LatestFile = path;
+                    ViewModel.Title = path;
+                    await ViewModel.OpenAsync(path);
                     Refresh();
                 }
+                else
+                {
+                    _logger.Warn($"Cannot open the logs. File '{path}' does not exist.");
+                    var msg = Messages.Message_FileNotExist;
+                    MessageBox.Show(msg, "Attention", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    var toRemove = (from f in ViewModel.Settings.FileHistory
+                                    where f == path
+                                    select f).FirstOrDefault();
+                    if (toRemove != null)
+                    {
+                        ViewModel.Settings.FileHistory.Remove(toRemove);
+                        Refresh();
+                    }
+                }
+                Mouse.OverrideCursor = null;
+            }
+            else if (ViewModel.Settings.RepositoryType == RepositoryType.OracleDatabase)
+            {
+                try
+                {
+                    LatestFile = path;
+                    ViewModel.Title = path.Substring(0, (path.Length > CS_LENTH) ? CS_LENTH : path.Length);
+                    await ViewModel.OpenAsync(path);
+                    Refresh();
+                }
+                catch (Exception ex)
+                {
+                    var toRemove = (from f in ViewModel.Settings.OracleDbHistory
+                                    where f == path
+                                    select f).FirstOrDefault();
+                    if (toRemove != null)
+                    {
+                        ViewModel.Settings.OracleDbHistory.Remove(toRemove);
+                        Refresh();
+                    }
+
+                    _logger.Error(ex.Message, ex);
+                    var msg = ex.Message;
+                    MessageBox.Show(msg, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally { Mouse.OverrideCursor = null; }
             }
         }
 
@@ -146,6 +209,23 @@ namespace Probel.JsonReader.Presentation.Views
         {
             RefreshFileHistory();
             RefreshCategories();
+            RefreshSource();
+            RefreshDays();
+        }
+
+        private void RefreshDays()
+        {
+            _menuDays.Items.Clear();
+            var days = ViewModel.GetDays();
+            for (int i = 0; i < days.Count(); i++)
+            {
+                var btn = new MenuItem
+                {
+                    Header = days.ElementAt(i).ToString("dd-MMM-yyyy"),
+                    IsChecked = false,
+                };
+                _menuDays.Items.Insert(i, btn);
+            }
         }
 
         private void RefreshCategories()
@@ -155,7 +235,7 @@ namespace Probel.JsonReader.Presentation.Views
 
             for (var i = 0; i < categories.Count(); i++)
             {
-                var btn = new MenuItem()
+                var btn = new MenuItem
                 {
                     Header = categories.ElementAt(i),
                     IsChecked = true
@@ -169,16 +249,53 @@ namespace Probel.JsonReader.Presentation.Views
         private void RefreshFileHistory()
         {
             _menuHistory.Items.Clear();
-            var history = ViewModel.Settings.FileHistory.OrderBy(h => h).ToList();
-            var i = 0;
-
-            for (i = 0; i < history.Count(); i++)
+            if (ViewModel.Settings.RepositoryType == RepositoryType.Csv)
             {
-                var btn = new MenuItem() { Header = history[i] };
-                btn.Click += OnMenuClick;
+                var history = ViewModel.Settings.FileHistory.OrderBy(h => h).ToList();
+                var i = 0;
 
-                _menuHistory.Items.Insert(i, btn);
+                for (i = 0; i < history.Count(); i++)
+                {
+                    var btn = new MenuItem() { Header = history[i], Tag = history[i] };
+                    btn.Click += OnMenuClick;
+
+                    _menuHistory.Items.Insert(i, btn);
+                }
             }
+            else if (ViewModel.Settings.RepositoryType == RepositoryType.OracleDatabase)
+            {
+                var history = ViewModel.Settings.OracleDbHistory.OrderBy(h => h).ToList();
+                var i = 0;
+
+                for (i = 0; i < history.Count(); i++)
+                {
+                    var h = history[i];
+                    var btn = new MenuItem() { Header = h.Substring(0, h.Length > CS_LENTH ? CS_LENTH : h.Length), Tag = h };
+                    btn.Click += OnMenuClick;
+
+                    _menuHistory.Items.Insert(i, btn);
+                }
+            }
+        }
+
+        private void RefreshSource()
+        {
+            switch (ViewModel.Settings.RepositoryType)
+            {
+                case RepositoryType.Csv:
+                    IsCsvFile.IsChecked = true;
+                    IsOracleDb.IsChecked = false;
+                    break;
+
+                case RepositoryType.OracleDatabase:
+                    IsCsvFile.IsChecked = false;
+                    IsOracleDb.IsChecked = true;
+                    break;
+
+                default: throw new NotSupportedException($"The repository type '{ViewModel.Settings.RepositoryType}' is not supported!");
+            }
+
+            RefreshFileHistory();
         }
 
         #endregion Methods

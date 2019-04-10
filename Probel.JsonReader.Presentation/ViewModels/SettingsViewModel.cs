@@ -1,6 +1,7 @@
 ﻿using Microsoft.Practices.Unity;
 using Prism.Mvvm;
 using Probel.JsonReader.Business.Data;
+using Probel.JsonReader.Presentation.Constants;
 using Probel.JsonReader.Presentation.Services;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -18,6 +19,8 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private bool _isSortAscending = false;
 
         private bool _isThreadIdVisible = false;
+
+        private RepositoryType _repositoryType = RepositoryType.Csv;
 
         private bool _showDebug = true;
 
@@ -38,18 +41,17 @@ namespace Probel.JsonReader.Presentation.ViewModels
         public SettingsViewModel()
         {
             FileHistory = new ObservableCollection<string>();
+            OracleDbHistory = new ObservableCollection<string>();
             PropertyChanged += OnPropertyChanged;
-            FileHistory.CollectionChanged += OnCollectionChanged;
+            FileHistory.CollectionChanged += OnFileCollectionChanged;
+            OracleDbHistory.CollectionChanged += OnDbCollectionChanged;
         }
 
         #endregion Constructors
 
         #region Properties
 
-        public ObservableCollection<string> FileHistory
-        {
-            get;
-        }
+        public ObservableCollection<string> FileHistory { get; }
 
         public bool IsLoggerVisible
         {
@@ -67,6 +69,14 @@ namespace Probel.JsonReader.Presentation.ViewModels
         {
             get => _isThreadIdVisible;
             set => SetProperty(ref _isThreadIdVisible, value, nameof(IsThreadIdVisible));
+        }
+
+        public ObservableCollection<string> OracleDbHistory { get; }
+
+        public RepositoryType RepositoryType
+        {
+            get => _repositoryType;
+            set => SetProperty(ref _repositoryType, value, nameof(RepositoryType));
         }
 
         [Dependency]
@@ -112,12 +122,18 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         #region Methods
 
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnDbCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            var count = OracleDbHistory.Count();
+            if (count > 5)
+            {
+                for (var i = 0; i < count - 5; i++) { OracleDbHistory.RemoveAt(i); }
+            }
+
             SerialisationService.Serialise(this);
         }
 
-        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void OnFileCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             var count = FileHistory.Count();
             if (count > 5)
@@ -125,6 +141,11 @@ namespace Probel.JsonReader.Presentation.ViewModels
                 for (var i = 0; i < count - 5; i++) { FileHistory.RemoveAt(i); }
             }
 
+            SerialisationService.Serialise(this);
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
             SerialisationService.Serialise(this);
         }
 

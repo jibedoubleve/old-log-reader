@@ -10,7 +10,6 @@
         bool ShowFatal { get; }
         bool ShowInfo { get; }
         bool ShowWarning { get; }
-
         bool IsSortAscending { get; }
         #endregion Properties
     }

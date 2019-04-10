@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Probel.JsonReader.Business.Data;
+using System;
+using System.Collections.Generic;
 
 namespace Probel.JsonReader.Business
 {
@@ -6,8 +8,22 @@ namespace Probel.JsonReader.Business
     {
         #region Methods
 
-        IEnumerable<LogModel> GetAllLogs(string path);
-        
+        IEnumerable<LogModel> Filter(decimal minutes, IFilter filter);
+
+        IEnumerable<LogModel> Filter(IEnumerable<string> categories, IFilter filter);
+
+        IEnumerable<LogModel> Filter(IEnumerable<string> categories, decimal minutes, IFilter filter);
+
+        IEnumerable<LogModel> GetAllLogs();
+
+        IEnumerable<string> GetCategories();
+
+        IEnumerable<DateTime> GetDays();
+
+        string GetSource();
+
+        void Setup(string connectionString);
+
         #endregion Methods
     }
 }

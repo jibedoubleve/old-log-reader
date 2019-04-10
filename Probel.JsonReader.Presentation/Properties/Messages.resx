@@ -222,4 +222,28 @@
   <data name="Button_OpenDirectory" xml:space="preserve">
     <value>Open directory</value>
   </data>
+  <data name="Menu_Source" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="Menu_Source_Csv" xml:space="preserve">
+    <value>Csv file</value>
+  </data>
+  <data name="Menu_Source_OracleDb" xml:space="preserve">
+    <value>Oracle database</value>
+  </data>
+  <data name="Button_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Button_Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Title_DbConnectionString" xml:space="preserve">
+    <value>Connection string</value>
+  </data>
+  <data name="Status_Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="Menu_Days" xml:space="preserve">
+    <value>Time machine</value>
+  </data>
 </root>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Practices.Unity;
 using Newtonsoft.Json;
+using Probel.JsonReader.Presentation.Constants;
 using Probel.JsonReader.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -81,54 +82,38 @@ namespace Probel.JsonReader.Presentation.Services
         #region Properties
 
         [JsonProperty]
-        public bool IsLoggerVisible
-        {
-            get; set;
-        }
+        public bool IsLoggerVisible { get; set; }
 
         [JsonProperty]
         public bool IsSortAscending { get; set; }
 
         [JsonProperty]
-        public bool IsThreadIdVisible
-        {
-            get; set;
-        }
+        public bool IsThreadIdVisible { get; set; }
 
         [JsonProperty]
-        public bool ShowDebug
-        {
-            get; set;
-        }
+        public bool ShowDebug { get; set; }
 
         [JsonProperty]
-        public bool ShowError
-        {
-            get; set;
-        }
+        public bool ShowError { get; set; }
 
         [JsonProperty]
-        public bool ShowFatal
-        {
-            get; set;
-        }
+        public bool ShowFatal { get; set; }
 
         [JsonProperty]
-        public bool ShowInfo
-        {
-            get; set;
-        }
+        public bool ShowInfo { get; set; }
 
         [JsonProperty]
         public bool ShowTrace { get; set; }
 
         [JsonProperty]
-        public bool ShowWarning
-        {
-            get; set;
-        }
+        public bool ShowWarning { get; set; }
 
         public IEnumerable<string> FileHistory { get; set; }
+
+        public IEnumerable<string> OracleDbHistory { get; set; }
+
+        [JsonProperty]
+        public RepositoryType RepositoryType { get; private set; }
         #endregion Properties
 
         #region Methods
@@ -144,9 +129,13 @@ namespace Probel.JsonReader.Presentation.Services
             vm.ShowError = ShowError;
             vm.ShowFatal = ShowFatal;
             vm.IsSortAscending = IsSortAscending;
+            vm.RepositoryType = RepositoryType;
 
             vm.FileHistory.Clear();
             vm.FileHistory.AddRange(FileHistory);
+
+            vm.OracleDbHistory.Clear();
+            vm.OracleDbHistory.AddRange(OracleDbHistory);
         }
 
         #endregion Methods

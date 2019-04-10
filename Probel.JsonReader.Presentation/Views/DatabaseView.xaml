@@ -1,0 +1,39 @@
+﻿<Window
+    x:Class="Probel.JsonReader.Presentation.Views.DatabaseView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Probel.JsonReader.Presentation.Views"
+    xmlns:m="clr-namespace:Probel.JsonReader.Presentation.Properties"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="http://prismlibrary.com/"
+    Title="{x:Static m:Messages.Title_DbConnectionString}"
+    Width="400"
+    Height="190
+    "
+    prism:ViewModelLocator.AutoWireViewModel="True"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    SizeToContent="Height"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d" WindowStyle="ToolWindow">
+    <DockPanel>
+        <StackPanel
+            HorizontalAlignment="Right"
+            DockPanel.Dock="Bottom"
+            Orientation="Horizontal">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Width" Value="90" />
+                    <Setter Property="Margin" Value="5" />
+                </Style>
+            </StackPanel.Resources>
+            <Button Content="{x:Static m:Messages.Button_Ok}" Click="OnOk"/>
+            <Button Content="{x:Static m:Messages.Button_Cancel}" Click="OnCancel"/>
+        </StackPanel>
+        <TextBox
+            Margin="5"
+            Text="{Binding ConnectionString}"
+            VerticalScrollBarVisibility="Visible" />
+    </DockPanel>
+</Window>

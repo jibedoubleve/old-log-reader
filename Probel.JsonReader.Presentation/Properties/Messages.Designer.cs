@@ -61,6 +61,24 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Button_Cancel {
+            get {
+                return ResourceManager.GetString("Button_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        public static string Button_Ok {
+            get {
+                return ResourceManager.GetString("Button_Ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open directory.
         /// </summary>
         public static string Button_OpenDirectory {
@@ -196,6 +214,15 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Time machine.
+        /// </summary>
+        public static string Menu_Days {
+            get {
+                return ResourceManager.GetString("Menu_Days", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _File.
         /// </summary>
         public static string Menu_File {
@@ -286,6 +313,33 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Source.
+        /// </summary>
+        public static string Menu_Source {
+            get {
+                return ResourceManager.GetString("Menu_Source", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Csv file.
+        /// </summary>
+        public static string Menu_Source_Csv {
+            get {
+                return ResourceManager.GetString("Menu_Source_Csv", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Oracle database.
+        /// </summary>
+        public static string Menu_Source_OracleDb {
+            get {
+                return ResourceManager.GetString("Menu_Source_OracleDb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Last {0} hours.
         /// </summary>
         public static string MenuItem_FilterHours {
@@ -349,6 +403,15 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading....
+        /// </summary>
+        public static string Status_Loading {
+            get {
+                return ResourceManager.GetString("Status_Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ready..
         /// </summary>
         public static string Status_Ready {
@@ -372,6 +435,15 @@ namespace Probel.JsonReader.Presentation.Properties {
         public static string Status_xxItems {
             get {
                 return ResourceManager.GetString("Status_xxItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection string.
+        /// </summary>
+        public static string Title_DbConnectionString {
+            get {
+                return ResourceManager.GetString("Title_DbConnectionString", resourceCulture);
             }
         }
     }

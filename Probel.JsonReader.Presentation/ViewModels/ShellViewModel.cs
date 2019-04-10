@@ -1,7 +1,7 @@
 ﻿using Microsoft.Practices.Unity;
 using Prism.Mvvm;
 using Probel.JsonReader.Business;
-using Probel.JsonReader.Business.Data;
+using Probel.JsonReader.Presentation.Constants;
 using Probel.JsonReader.Presentation.Helpers;
 using Probel.JsonReader.Presentation.Properties;
 using Probel.JsonReader.Presentation.Services;
@@ -26,7 +26,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private const string TITLE_PREFIX = "Log reader";
         private readonly IFormatProvider _formatProvider = new CultureInfo("en-US");
         private readonly ILogService _logger;
-        private readonly ILogRepository LogRepository;
+        private ILogRepository LogRepository { get; set; }
         private ObservableCollection<string> _categories = new ObservableCollection<string>();
         private decimal _filterMinutes = 0;
         private ObservableCollection<LogModel> _logs = new ObservableCollection<LogModel>();
@@ -35,7 +35,6 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private string _statusItemsCount = string.Format(Messages.Status_xxItems, 0);
         private string _title = TITLE_PREFIX;
         private string _version;
-        private string FilePath;
 
         private FileSystemWatcher FileWatcher;
 
@@ -43,13 +42,14 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         #region Constructors
 
-        public ShellViewModel(ILogRepository logRepository, ICommandBuilder commandBuilder, ILogService logger)
+        public ShellViewModel(ILogRepositoryFactory logRepositoryFactory, ICommandBuilder commandBuilder, ILogService logger)
         {
             _logger = logger;
             var v = Assembly.GetEntryAssembly().GetName().Version;
             Version = string.Format(Messages.Status_Version, v.ToString(3));
 
-            LogRepository = logRepository;
+            _logRepositoryFactory = logRepositoryFactory;
+            LogRepository = logRepositoryFactory.Get();
             DefaultDirectory = Environment.ExpandEnvironmentVariables(DEFAULT_DIRECTORY);
 
             OpenCommand = commandBuilder.BuildAsyncCommand<string>(OpenAsync, CanOpen);
@@ -80,6 +80,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
             set => SetProperty(ref _logs, value, nameof(Logs));
         }
 
+        public object Message { get; private set; }
         public ICommand OpenCommand { get; }
 
         [Dependency]
@@ -107,13 +108,15 @@ namespace Probel.JsonReader.Presentation.ViewModels
             set => SetProperty(ref _title, $"{TITLE_PREFIX} - [{value}]", nameof(Title));
         }
 
+        private bool _loadFailed;
+
         public string Version
         {
             get => _version;
             set => SetProperty(ref _version, value, nameof(Version));
         }
 
-        private IEnumerable<LogModel> BufferLogs { get; set; }
+        private readonly ILogRepositoryFactory _logRepositoryFactory;
 
         #endregion Properties
 
@@ -121,9 +124,26 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         public string GetLastFile()
         {
-            return (Settings.FileHistory.Count > 0)
-                ? Settings.FileHistory.OrderBy(e => e).Last()
-                : string.Empty;
+            if (Settings.RepositoryType == RepositoryType.Csv)
+            {
+                return (Settings.FileHistory.Count > 0)
+                    ? Settings.FileHistory.OrderBy(e => e).Last()
+                    : string.Empty;
+            }
+            else if (Settings.RepositoryType == RepositoryType.OracleDatabase)
+            {
+                return (Settings.OracleDbHistory.Count > 0)
+                    ? Settings.OracleDbHistory.OrderBy(e => e).Last()
+                    : string.Empty;
+            }
+            else { throw new NotSupportedException($"Repository of type '{Settings.RepositoryType}' is not supported!"); }
+        }
+
+        internal void SetMode(RepositoryType mode)
+        {
+            Settings.RepositoryType = mode;
+            LogRepository = _logRepositoryFactory.Get();
+
         }
 
         public async Task Load()
@@ -134,9 +154,13 @@ namespace Probel.JsonReader.Presentation.ViewModels
                 _logger.Debug($"Load last opened file. Path: '{lastFile}'");
                 await OpenAsync(lastFile);
                 Title = lastFile;
-                //RaisePropertyChanged(nameof(Title));
+                _loadFailed = false;
             }
-            else { _logger.Warn($"Cannot load last opened file. Path: '{(lastFile ?? "<empty>")}'"); }
+            else
+            {
+                _logger.Warn($"Cannot load last opened file. Path: '{(lastFile ?? "<empty>")}'");
+                _loadFailed = true;
+            }
         }
 
         public void RefillCategories(IEnumerable<string> categories)
@@ -145,27 +169,45 @@ namespace Probel.JsonReader.Presentation.ViewModels
             Categories.AddRange(categories);
         }
 
-        internal void FilterCategories(IEnumerable<string> categories) => FillLogs(BufferLogs.Filter(categories, Settings));
+        internal void FilterCategories(IEnumerable<string> categories)
+        {
+            SetLoading();
+            FillLogs(LogRepository.Filter(categories, Settings));
+            SetReady();
+        }
 
-        internal IEnumerable<string> GetCategories() => BufferLogs.GetCategories();
+        internal IEnumerable<string> GetCategories()
+        {
+            if (_loadFailed) { return new List<string>(); }
 
-        internal async Task OpenFileAsync(string path) => await Task.Run(() => OpenAsync(path));
+            SetLoading();
+            var result = LogRepository.GetCategories();
+            SetReady();
+            return result;
+        }
 
         private void AddFileInHistory(string filePath)
         {
-            var doubloon = (from f in Settings.FileHistory
-                            where f == filePath
-                            select f).Count() > 0;
+            if (Settings.RepositoryType == RepositoryType.Csv)
+            {
+                var doubloon = (from f in Settings.FileHistory
+                                where f == filePath
+                                select f).Count() > 0;
 
-            if (!doubloon) { Settings.FileHistory.Add(filePath); }
+                if (!doubloon) { Settings.FileHistory.Add(filePath); }
+            }
+            else if (Settings.RepositoryType == RepositoryType.OracleDatabase)
+            {
+                var doubloon = (from cs in Settings.OracleDbHistory
+                                where cs == filePath
+                                select filePath).Count() > 0;
+
+                if (!doubloon) { Settings.OracleDbHistory.Add(filePath); }
+            }
+            else { throw new NotSupportedException($"Cannot save history for repository of type '{Settings.RepositoryType}'"); }
         }
 
-        private bool CanFilter(string arg)
-        {
-            var isNumber = (arg == null) ? true : decimal.TryParse(arg, NumberStyles.AllowDecimalPoint, _formatProvider, out var r);
-            var hasLogs = BufferLogs != null && BufferLogs.Count() != 0;
-            return isNumber && hasLogs;
-        }
+        private bool CanFilter(string arg) => Logs != null;
 
         private bool CanOpen(string filePath)
         {
@@ -180,18 +222,30 @@ namespace Probel.JsonReader.Presentation.ViewModels
             SetItemsCount();
         }
 
+        public IEnumerable<DateTime> GetDays()
+        {
+            if (_loadFailed) { return new List<DateTime>(); }
+
+            SetLoading();
+            var result = LogRepository.GetDays();
+            SetReady();
+            return result;
+        }
+
         private async Task FilterAsync(string arg)
         {
+            SetLoading();
             var now = DateTime.Now;
             if (decimal.TryParse(arg, NumberStyles.AllowDecimalPoint, _formatProvider, out var value))
             {
                 FilterMinutes = value;
             }
 
-            var logs = await Task.Run(() => BufferLogs.Filter(FilterMinutes, Settings)
-                                                      .Filter(Categories, Settings));
+            var logs = await Task.Run(() => LogRepository.Filter(Categories, FilterMinutes, Settings));
             Logs = new ObservableCollection<LogModel>(logs);
             SetItemsCount();
+            SetReady();
+            _loadFailed = false;
         }
 
         private void ListenToFileChange()
@@ -202,30 +256,41 @@ namespace Probel.JsonReader.Presentation.ViewModels
                 FileWatcher = null;
             }
 
-            var path = Path.GetDirectoryName(FilePath);
-            FileWatcher = new FileSystemWatcher()
+            if (Settings.RepositoryType == RepositoryType.Csv)
             {
-                Path = path,
-                Filter = Path.GetFileName(FilePath),
-            };
-            FileWatcher.Changed += OnFileChanged;
-            FileWatcher.EnableRaisingEvents = true;
+                var path = Path.GetDirectoryName(LogRepository.GetSource());
+                FileWatcher = new FileSystemWatcher()
+                {
+                    Path = path,
+                    Filter = Path.GetFileName(LogRepository.GetSource()),
+                };
+                FileWatcher.Changed += OnFileChanged;
+                FileWatcher.EnableRaisingEvents = true;
+            }
         }
 
         private async void OnFileChanged(object sender, FileSystemEventArgs e)
         {
+            SetLoading();
             FilterCommand.RaiseCanExecuteChanged();
-            BufferLogs = await Task.Run(() => LogRepository.GetAllLogs(FilePath));
-            FillLogs(BufferLogs.Filter(FilterMinutes, Settings).Filter(Categories, Settings));
+            var logs = await Task.Run(() => LogRepository.GetAllLogs());
+            Logs = new ObservableCollection<LogModel>(logs);
+
+            FillLogs(LogRepository.Filter(Categories, FilterMinutes, Settings));
+
             Status = Messages.Status_FileChanged + $" - [{DateTime.Now.ToLongTimeString()}]";
         }
 
-        private async Task OpenAsync(string filePath)
+        public async Task OpenAsync(string filePath)
         {
+            SetLoading();
             AddFileInHistory(filePath);
             FilterMinutes = 0;
-            FilePath = filePath;
-            BufferLogs = await Task.Run(() => LogRepository.GetAllLogs(filePath));
+
+            LogRepository.Setup(filePath);
+
+            var logs = await Task.Run(() => LogRepository.GetAllLogs());
+            Logs = new ObservableCollection<LogModel>(logs);
             RefillCategories(GetCategories());
             ListenToFileChange();
 
@@ -235,6 +300,10 @@ namespace Probel.JsonReader.Presentation.ViewModels
         }
 
         private void SetItemsCount() => StatusItemsCount = string.Format(Messages.Status_xxItems, Logs.Count);
+
+        private void SetLoading() => Status = Messages.Status_Loading;
+
+        private void SetReady() => Status = Messages.Status_Ready;
 
         #endregion Methods
     }

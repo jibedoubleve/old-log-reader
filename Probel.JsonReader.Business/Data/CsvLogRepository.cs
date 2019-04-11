@@ -1,5 +1,5 @@
 ﻿using CsvHelper;
-using Probel.JsonReader.Business.Exception;
+using Probel.JsonReader.Business.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,7 +19,7 @@ namespace Probel.JsonReader.Business.Data
 
         #region Methods
 
-        public override IEnumerable<LogModel> GetAllLogs()
+        public override IEnumerable<LogModel> GetLogs()
         {
             var records = new List<LogModel>();
 
@@ -45,6 +45,16 @@ namespace Probel.JsonReader.Business.Data
             return records;
         }
 
+        public override IEnumerable<LogModel> Filter(IEnumerable<string> categories, DateTime day, IFilter filter)
+        {
+            var levels = GetLevels(filter);
+            var result = (from l in LogCache
+                          where categories.Contains(l.Logger)
+                             && levels.Contains(l.Level)
+                          select l).ToList();
+            return result;
+        }
+
         public override IEnumerable<string> GetCategories()
         {
             if (LogCache == null) { return new List<string>(); }
@@ -59,7 +69,10 @@ namespace Probel.JsonReader.Business.Data
         {
             var result = (from m in LogCache
                           orderby m.Time
-                          select m.Time).ToList();
+                          select m.Time.Date)
+                                        .Distinct()
+                                        .ToList();
+
             return result;
         }
 

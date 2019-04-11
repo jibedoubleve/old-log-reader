@@ -31,7 +31,7 @@ namespace Probel.JsonReader.Business
 
         public IEnumerable<LogModel> Filter(decimal minutes, IFilter filter)
         {
-            if (LogCache == null) { LogCache = GetAllLogs(); }
+            if (LogCache == null) { LogCache = GetLogs(); }
 
             var now = DateTime.Now;
             var levels = GetLevels(filter);
@@ -63,7 +63,7 @@ namespace Probel.JsonReader.Business
 
             if (LogCache == null)
             {
-                LogCache = GetAllLogs();
+                LogCache = GetLogs();
                 result = LogCache;
             }
             else if (categories.Count() == 0) { result = LogCache.ToList(); }
@@ -90,10 +90,10 @@ namespace Probel.JsonReader.Business
 
             if (LogCache == null)
             {
-                LogCache = GetAllLogs();
+                LogCache = GetLogs();
                 result = LogCache;
             }
-            else if (categories.Count() == 0) { result = LogCache; }
+            else if ((categories?.Count() ?? 0) == 0) { result = LogCache; }
             else
             {
                 result = (from l in LogCache
@@ -109,11 +109,13 @@ namespace Probel.JsonReader.Business
                 : result.OrderByDescending(e => e.Time);
         }
 
-        public abstract IEnumerable<LogModel> GetAllLogs();
+        public abstract IEnumerable<LogModel> Filter(IEnumerable<string> categories, DateTime day, IFilter filters);
 
         public abstract IEnumerable<string> GetCategories();
 
         public abstract IEnumerable<DateTime> GetDays();
+
+        public abstract IEnumerable<LogModel> GetLogs();
 
         public abstract string GetSource();
 

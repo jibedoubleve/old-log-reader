@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Log Reader"
-#define MyAppVersion "1.5.1"
+#define MyAppVersion "2.0.0"
 #define MyAppPublisher "Probel"
 #define MyAppURL "http://www.probel.xyz"
 #define MyAppExeName "Probel.JsonReader.Presentation.exe"
@@ -21,7 +21,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
-OutputDir=D:\Release\log-reader
+OutputDir=C:\Release\log-reader
 OutputBaseFilename=logreader.{#MyAppVersion}.setup
 Compression=lzma
 SolidCompression=yes
@@ -33,8 +33,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Probel.JsonReader.Presentation.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\Probel.JsonReader.Presentation.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Projects\log-reader\Probel.JsonReader.Presentation\bin\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

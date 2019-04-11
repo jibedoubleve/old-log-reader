@@ -5,6 +5,7 @@ using Probel.JsonReader.Presentation.Properties;
 using Probel.JsonReader.Presentation.Services;
 using Probel.JsonReader.Presentation.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -45,20 +46,24 @@ namespace Probel.JsonReader.Presentation.Views
 
         #region Methods
 
-        private void OnCategoryClick(object sender, RoutedEventArgs e)
+        private async void OnCategoryClick(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem mi)
             {
                 mi.IsChecked = !mi.IsChecked;
-
-                var categories = (from m in _menuCategories.Items.Cast<MenuItem>()
-                                  where m.IsChecked == true
-                                  select (string)m.Header).ToList();
+                var categories = GetCheckedCategories();
 
                 ViewModel.RefillCategories(categories);
 
-                ViewModel.FilterCommand.TryExecute(ViewModel.FilterMinutes.ToString());
+                await ViewModel.FilterAsync();
             }
+        }
+
+        private IEnumerable<string> GetCheckedCategories()
+        {
+            return (from m in _menuCategories.Items.Cast<MenuItem>()
+                    where m.IsChecked == true
+                    select (string)m.Header).ToList();
         }
 
         private void OnClickHistory(object sender, RoutedEventArgs e) => Refresh();
@@ -90,6 +95,15 @@ namespace Probel.JsonReader.Presentation.Views
 
         private void OnMenuClick(object sender, RoutedEventArgs e) => OpenFile((sender as MenuItem).Tag.ToString());
 
+        private async void OnDayClick(object sender, RoutedEventArgs e)
+        {
+            if (e.Source is MenuItem btn && btn?.Tag is DateTime day)
+            {
+                var categs = GetCheckedCategories();
+                await ViewModel.FilterDay(categs, day);
+            }
+        }
+
         private void OnOpenInExplorer(object sender, RoutedEventArgs e)
         {
             var lastFile = ViewModel.GetLastFile();
@@ -118,14 +132,22 @@ namespace Probel.JsonReader.Presentation.Views
         private void OnSelectCsvSource(object sender, RoutedEventArgs e)
         {
             ViewModel.SetMode(RepositoryType.Csv);
-            BtnOpenDir.Visibility = Visibility.Visible;
+            _btnOpenDir.Visibility = Visibility.Visible;
+
+            _menuDays.Visibility = Visibility.Collapsed;
+            _menuFilter.Visibility = Visibility.Visible;
+
             RefreshSource();
         }
 
         private void OnSelectOracleDbSource(object sender, RoutedEventArgs e)
         {
             ViewModel.SetMode(RepositoryType.OracleDatabase);
-            BtnOpenDir.Visibility = Visibility.Collapsed;
+            _btnOpenDir.Visibility = Visibility.Collapsed;
+
+            _menuDays.Visibility = Visibility.Visible;
+            _menuFilter.Visibility = Visibility.Collapsed;
+
             RefreshSource();
         }
 
@@ -139,9 +161,13 @@ namespace Probel.JsonReader.Presentation.Views
 
         private async void OnWindowLoad(object sender, RoutedEventArgs e)
         {
-            BtnOpenDir.Visibility = (ViewModel.Settings.RepositoryType == RepositoryType.Csv)
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+            var rt = ViewModel.Settings.RepositoryType;
+
+            _btnOpenDir.Visibility = (rt == RepositoryType.Csv) ? Visibility.Visible : Visibility.Collapsed;
+
+            _menuFilter.Visibility = (rt == RepositoryType.Csv) ? Visibility.Visible : Visibility.Collapsed;
+            _menuDays.Visibility = (rt == RepositoryType.Csv) ? Visibility.Collapsed : Visibility.Visible;
+
 
             await ViewModel.Load();
 
@@ -182,7 +208,7 @@ namespace Probel.JsonReader.Presentation.Views
                 try
                 {
                     LatestFile = path;
-                    ViewModel.Title = path.Substring(0, (path.Length > CS_LENTH) ? CS_LENTH : path.Length);
+                    ViewModel.Title = path.ToReadableCString();
                     await ViewModel.OpenAsync(path);
                     Refresh();
                 }
@@ -222,9 +248,12 @@ namespace Probel.JsonReader.Presentation.Views
                 var btn = new MenuItem
                 {
                     Header = days.ElementAt(i).ToString("dd-MMM-yyyy"),
+                    Tag = days.ElementAt(i),
                     IsChecked = false,
                 };
+                btn.Click += OnDayClick;
                 _menuDays.Items.Insert(i, btn);
+
             }
         }
 
@@ -270,7 +299,7 @@ namespace Probel.JsonReader.Presentation.Views
                 for (i = 0; i < history.Count(); i++)
                 {
                     var h = history[i];
-                    var btn = new MenuItem() { Header = h.Substring(0, h.Length > CS_LENTH ? CS_LENTH : h.Length), Tag = h };
+                    var btn = new MenuItem() { Header = h.ToReadableCString(), Tag = h };
                     btn.Click += OnMenuClick;
 
                     _menuHistory.Items.Insert(i, btn);

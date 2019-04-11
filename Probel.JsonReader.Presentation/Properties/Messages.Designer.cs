@@ -151,6 +151,33 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current date: {0}.
+        /// </summary>
+        public static string Label_CurrentDate {
+            get {
+                return ResourceManager.GetString("Label_CurrentDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current date: Multiple.
+        /// </summary>
+        public static string Label_MultipleDates {
+            get {
+                return ResourceManager.GetString("Label_MultipleDates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current date: N.A..
+        /// </summary>
+        public static string Label_NoDate {
+            get {
+                return ResourceManager.GetString("Label_NoDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to C_ategories.
         /// </summary>
         public static string Menu_Categories {
@@ -174,15 +201,6 @@ namespace Probel.JsonReader.Presentation.Properties {
         public static string Menu_Category_None {
             get {
                 return ResourceManager.GetString("Menu_Category_None", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to _Columns.
-        /// </summary>
-        public static string Menu_Columns {
-            get {
-                return ResourceManager.GetString("Menu_Columns", resourceCulture);
             }
         }
         
@@ -214,7 +232,7 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Time machine.
+        ///   Looks up a localized string similar to Time line.
         /// </summary>
         public static string Menu_Days {
             get {
@@ -313,6 +331,24 @@ namespace Probel.JsonReader.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show exception box.
+        /// </summary>
+        public static string Menu_ShowException {
+            get {
+                return ResourceManager.GetString("Menu_ShowException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show message box.
+        /// </summary>
+        public static string Menu_ShowMessage {
+            get {
+                return ResourceManager.GetString("Menu_ShowMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Source.
         /// </summary>
         public static string Menu_Source {
@@ -336,6 +372,15 @@ namespace Probel.JsonReader.Presentation.Properties {
         public static string Menu_Source_OracleDb {
             get {
                 return ResourceManager.GetString("Menu_Source_OracleDb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _View.
+        /// </summary>
+        public static string Menu_View {
+            get {
+                return ResourceManager.GetString("Menu_View", resourceCulture);
             }
         }
         

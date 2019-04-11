@@ -144,8 +144,8 @@
   <data name="MenuItem_NoFilter" xml:space="preserve">
     <value>All</value>
   </data>
-  <data name="Menu_Columns" xml:space="preserve">
-    <value>_Columns</value>
+  <data name="Menu_View" xml:space="preserve">
+    <value>_View</value>
   </data>
   <data name="Menu_Columns_Exception" xml:space="preserve">
     <value>_Exception</value>
@@ -244,6 +244,21 @@
     <value>Loading...</value>
   </data>
   <data name="Menu_Days" xml:space="preserve">
-    <value>Time machine</value>
+    <value>Time line</value>
+  </data>
+  <data name="Label_CurrentDate" xml:space="preserve">
+    <value>Current date: {0}</value>
+  </data>
+  <data name="Label_MultipleDates" xml:space="preserve">
+    <value>Current date: Multiple</value>
+  </data>
+  <data name="Label_NoDate" xml:space="preserve">
+    <value>Current date: N.A.</value>
+  </data>
+  <data name="Menu_ShowException" xml:space="preserve">
+    <value>Show exception box</value>
+  </data>
+  <data name="Menu_ShowMessage" xml:space="preserve">
+    <value>Show message box</value>
   </data>
 </root>

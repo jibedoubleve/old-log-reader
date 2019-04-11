@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Probel.JsonReader.Business.Exception
+namespace Probel.JsonReader.Business.Exceptions
 {
     [Serializable]
     public class InvalidPathException : ApplicationException

@@ -41,7 +41,19 @@
                 <Separator />
                 <MenuItem Click="OnFileMenuQuitMenu" Header="{x:Static m:Messages.Menu_File_Quit}" />
             </MenuItem>
-            <MenuItem Header="{x:Static m:Messages.Menu_Filters}">
+            <MenuItem Header="{x:Static m:Messages.Menu_View}">
+                <MenuItem
+                    x:Name="IsLoggerVisible"
+                    Click="OnShowColumn"
+                    Header="{x:Static m:Messages.Menu_Columns_Logger}"
+                    IsChecked="{Binding Settings.IsLoggerVisible, UpdateSourceTrigger=PropertyChanged}" />
+                <MenuItem
+                    x:Name="IsThreadIdVisible"
+                    Click="OnShowColumn"
+                    Header="{x:Static m:Messages.Menu_Columns_ThreadId}"
+                    IsChecked="{Binding Settings.IsThreadIdVisible, UpdateSourceTrigger=PropertyChanged}" />
+            </MenuItem>
+            <MenuItem x:Name="_menuFilter" Header="{x:Static m:Messages.Menu_Filters}">
                 <MenuItem
                     Command="{Binding FilterCommand}"
                     CommandParameter="0.5"
@@ -85,8 +97,8 @@
                     Header="{x:Static m:Messages.MenuItem_NoFilter}"
                     IsChecked="{Binding FilterMinutes, Converter={StaticResource MinutesFilterToBooleanConverter}, ConverterParameter=0}" />
             </MenuItem>
-            <MenuItem x:Name="_menuCategories" Header="{x:Static m:Messages.Menu_Categories}" />
             <MenuItem x:Name="_menuDays" Header="{x:Static m:Messages.Menu_Days}" />
+            <MenuItem x:Name="_menuCategories" Header="{x:Static m:Messages.Menu_Categories}" />
             <MenuItem Header="{x:Static m:Messages.Menu_Order}">
                 <MenuItem
                     Click="OnShowColumn"
@@ -98,18 +110,6 @@
                     Command="{Binding FilterCommand}"
                     Header="{x:Static m:Messages.Menu_Order_Desc}"
                     IsChecked="{Binding Settings.IsSortAscending, Converter={StaticResource InvertBooleanConverter}}" />
-            </MenuItem>
-            <MenuItem Header="{x:Static m:Messages.Menu_Columns}">
-                <MenuItem
-                    x:Name="IsLoggerVisible"
-                    Click="OnShowColumn"
-                    Header="{x:Static m:Messages.Menu_Columns_Logger}"
-                    IsChecked="{Binding Settings.IsLoggerVisible, UpdateSourceTrigger=PropertyChanged}" />
-                <MenuItem
-                    x:Name="IsThreadIdVisible"
-                    Click="OnShowColumn"
-                    Header="{x:Static m:Messages.Menu_Columns_ThreadId}"
-                    IsChecked="{Binding Settings.IsThreadIdVisible, UpdateSourceTrigger=PropertyChanged}" />
             </MenuItem>
             <MenuItem Header="{x:Static m:Messages.Menu_Source}">
                 <MenuItem
@@ -129,7 +129,7 @@
                 </Style>
             </DockPanel.Resources>
             <Button
-                x:Name="BtnOpenDir"
+                x:Name="_btnOpenDir"
                 Margin="20,5,5,5"
                 HorizontalContentAlignment="Right"
                 Click="OnOpenInExplorer"
@@ -300,16 +300,12 @@
                     </Style>
                 </Label.Style>
             </Label>
-            <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="75" />
-                    <RowDefinition Height="5" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <GroupBox Header="{x:Static m:Messages.Header_Message}">
+            <TabControl Grid.Column="1">
+                <TabItem Header="{x:Static m:Messages.Header_Message}">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto">
                         <TextBlock
                             x:Name="tbMessage"
+                            Margin="5"
                             FontFamily="Consolas"
                             FontSize="11"
                             Text="{Binding ElementName=Grid, Path=SelectedItem.Message}">
@@ -320,15 +316,12 @@
                             </TextBlock.ContextMenu>
                         </TextBlock>
                     </ScrollViewer>
-                </GroupBox>
-                <GridSplitter
-                    Grid.Row="1"
-                    Height="5"
-                    HorizontalAlignment="Stretch" />
-                <GroupBox Grid.Row="2" Header="{x:Static m:Messages.Header_Exception}">
+                </TabItem>
+                <TabItem Header="{x:Static m:Messages.Header_Exception}">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto">
                         <TextBlock
                             x:Name="tbException"
+                            Margin="5"
                             FontFamily="Consolas"
                             FontSize="11"
                             Text="{Binding ElementName=Grid, Path=SelectedItem.Exception}">
@@ -339,8 +332,8 @@
                             </TextBlock.ContextMenu>
                         </TextBlock>
                     </ScrollViewer>
-                </GroupBox>
-            </Grid>
+                </TabItem>
+            </TabControl>
         </Grid>
         <StatusBar Grid.Row="5">
             <StatusBarItem Content="{Binding Status}" />
@@ -352,6 +345,11 @@
             <StatusBarItem
                 HorizontalAlignment="Right"
                 Content="{Binding StatusItemsCount}"
+                DockPanel.Dock="Right" />
+            <Separator Margin="5,3,5,3" DockPanel.Dock="Right" />
+            <StatusBarItem
+                HorizontalAlignment="Right"
+                Content="{Binding CurrentDay}"
                 DockPanel.Dock="Right" />
             <Separator Margin="5,3,5,3" DockPanel.Dock="Right" />
             <StatusBarItem HorizontalAlignment="Right" DockPanel.Dock="Right">

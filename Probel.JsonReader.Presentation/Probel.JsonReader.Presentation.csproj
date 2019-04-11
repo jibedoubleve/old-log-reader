@@ -117,6 +117,7 @@
     <Compile Include="Helpers\DelegateCommandExtension.cs" />
     <Compile Include="Helpers\CommandBuilder.cs" />
     <Compile Include="Helpers\CommandExtensions.cs" />
+    <Compile Include="Helpers\StringHExtension.cs" />
     <Compile Include="Services\ConfigurationService.cs" />
     <Compile Include="Services\LogService.cs" />
     <Compile Include="Services\LogRepositoryFactory.cs" />

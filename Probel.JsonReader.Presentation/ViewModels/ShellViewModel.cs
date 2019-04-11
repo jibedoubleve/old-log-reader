@@ -26,16 +26,17 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private const string TITLE_PREFIX = "Log reader";
         private readonly IFormatProvider _formatProvider = new CultureInfo("en-US");
         private readonly ILogService _logger;
-        private ILogRepository LogRepository { get; set; }
+        private readonly ILogRepositoryFactory _logRepositoryFactory;
         private ObservableCollection<string> _categories = new ObservableCollection<string>();
+        private string _currentDay = Messages.Label_NoDate;
         private decimal _filterMinutes = 0;
+        private bool _loadFailed;
         private ObservableCollection<LogModel> _logs = new ObservableCollection<LogModel>();
         private SettingsViewModel _settings;
         private string _status = Messages.Status_Ready;
         private string _statusItemsCount = string.Format(Messages.Status_xxItems, 0);
         private string _title = TITLE_PREFIX;
         private string _version;
-
         private FileSystemWatcher FileWatcher;
 
         #endregion Fields
@@ -53,7 +54,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
             DefaultDirectory = Environment.ExpandEnvironmentVariables(DEFAULT_DIRECTORY);
 
             OpenCommand = commandBuilder.BuildAsyncCommand<string>(OpenAsync, CanOpen);
-            FilterCommand = commandBuilder.BuildAsyncCommand<string>(FilterAsync, CanFilter);
+            FilterCommand = commandBuilder.BuildAsyncCommand(FilterAsync);
         }
 
         #endregion Constructors
@@ -64,6 +65,12 @@ namespace Probel.JsonReader.Presentation.ViewModels
         {
             get => _categories;
             set => SetProperty(ref _categories, value, nameof(Categories));
+        }
+
+        public string CurrentDay
+        {
+            get => _currentDay;
+            set => SetProperty(ref _currentDay, value, nameof(CurrentDay));
         }
 
         public ICommand FilterCommand { get; }
@@ -81,6 +88,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
         }
 
         public object Message { get; private set; }
+
         public ICommand OpenCommand { get; }
 
         [Dependency]
@@ -108,19 +116,47 @@ namespace Probel.JsonReader.Presentation.ViewModels
             set => SetProperty(ref _title, $"{TITLE_PREFIX} - [{value}]", nameof(Title));
         }
 
-        private bool _loadFailed;
-
         public string Version
         {
             get => _version;
             set => SetProperty(ref _version, value, nameof(Version));
         }
 
-        private readonly ILogRepositoryFactory _logRepositoryFactory;
+        private ILogRepository LogRepository { get; set; }
 
         #endregion Properties
 
         #region Methods
+
+        public async Task FilterAsync()
+        {
+            var logs = await Task.Run(() => LogRepository.Filter(Categories, 0, Settings));
+            Logs = new ObservableCollection<LogModel>(logs);
+            SetStatusBar();
+            SetReady();
+            _loadFailed = false;
+        }
+
+        public async Task FilterDay(IEnumerable<string> categories, DateTime day)
+        {
+            SetLoading();
+
+            var logs = await Task.Run(() => LogRepository.Filter(categories, day, Settings));
+            Logs = new ObservableCollection<LogModel>(logs);
+            SetStatusBar();
+            SetReady();
+            _loadFailed = false;
+        }
+
+        public IEnumerable<DateTime> GetDays()
+        {
+            if (_loadFailed) { return new List<DateTime>(); }
+
+            SetLoading();
+            var result = LogRepository.GetDays();
+            SetReady();
+            return result;
+        }
 
         public string GetLastFile()
         {
@@ -139,13 +175,6 @@ namespace Probel.JsonReader.Presentation.ViewModels
             else { throw new NotSupportedException($"Repository of type '{Settings.RepositoryType}' is not supported!"); }
         }
 
-        internal void SetMode(RepositoryType mode)
-        {
-            Settings.RepositoryType = mode;
-            LogRepository = _logRepositoryFactory.Get();
-
-        }
-
         public async Task Load()
         {
             var lastFile = GetLastFile();
@@ -161,6 +190,23 @@ namespace Probel.JsonReader.Presentation.ViewModels
                 _logger.Warn($"Cannot load last opened file. Path: '{(lastFile ?? "<empty>")}'");
                 _loadFailed = true;
             }
+        }
+
+        public async Task OpenAsync(string filePath)
+        {
+            SetLoading();
+            AddFileInHistory(filePath);
+            FilterMinutes = 0;
+
+            LogRepository.Setup(filePath);
+
+            var logs = await Task.Run(() => LogRepository.GetLogs());
+            Logs = new ObservableCollection<LogModel>(logs);
+            RefillCategories(GetCategories());
+            ListenToFileChange();
+
+            await FilterAsync();
+            Status = Messages.Status_FileLoaded;
         }
 
         public void RefillCategories(IEnumerable<string> categories)
@@ -186,6 +232,12 @@ namespace Probel.JsonReader.Presentation.ViewModels
             return result;
         }
 
+        internal void SetMode(RepositoryType mode)
+        {
+            Settings.RepositoryType = mode;
+            LogRepository = _logRepositoryFactory.Get();
+        }
+
         private void AddFileInHistory(string filePath)
         {
             if (Settings.RepositoryType == RepositoryType.Csv)
@@ -207,8 +259,6 @@ namespace Probel.JsonReader.Presentation.ViewModels
             else { throw new NotSupportedException($"Cannot save history for repository of type '{Settings.RepositoryType}'"); }
         }
 
-        private bool CanFilter(string arg) => Logs != null;
-
         private bool CanOpen(string filePath)
         {
             var notEmptyPath = !string.IsNullOrEmpty(filePath);
@@ -219,33 +269,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private void FillLogs(IEnumerable<LogModel> models)
         {
             Logs = new ObservableCollection<LogModel>(models);
-            SetItemsCount();
-        }
-
-        public IEnumerable<DateTime> GetDays()
-        {
-            if (_loadFailed) { return new List<DateTime>(); }
-
-            SetLoading();
-            var result = LogRepository.GetDays();
-            SetReady();
-            return result;
-        }
-
-        private async Task FilterAsync(string arg)
-        {
-            SetLoading();
-            var now = DateTime.Now;
-            if (decimal.TryParse(arg, NumberStyles.AllowDecimalPoint, _formatProvider, out var value))
-            {
-                FilterMinutes = value;
-            }
-
-            var logs = await Task.Run(() => LogRepository.Filter(Categories, FilterMinutes, Settings));
-            Logs = new ObservableCollection<LogModel>(logs);
-            SetItemsCount();
-            SetReady();
-            _loadFailed = false;
+            SetStatusBar();
         }
 
         private void ListenToFileChange()
@@ -272,8 +296,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private async void OnFileChanged(object sender, FileSystemEventArgs e)
         {
             SetLoading();
-            FilterCommand.RaiseCanExecuteChanged();
-            var logs = await Task.Run(() => LogRepository.GetAllLogs());
+            var logs = await Task.Run(() => LogRepository.GetLogs());
             Logs = new ObservableCollection<LogModel>(logs);
 
             FillLogs(LogRepository.Filter(Categories, FilterMinutes, Settings));
@@ -281,22 +304,14 @@ namespace Probel.JsonReader.Presentation.ViewModels
             Status = Messages.Status_FileChanged + $" - [{DateTime.Now.ToLongTimeString()}]";
         }
 
-        public async Task OpenAsync(string filePath)
+        private void SetCurrentDay()
         {
-            SetLoading();
-            AddFileInHistory(filePath);
-            FilterMinutes = 0;
+            var day = (from l in Logs ?? new ObservableCollection<LogModel>()
+                       select l.Time.Date).Distinct().ToList();
 
-            LogRepository.Setup(filePath);
-
-            var logs = await Task.Run(() => LogRepository.GetAllLogs());
-            Logs = new ObservableCollection<LogModel>(logs);
-            RefillCategories(GetCategories());
-            ListenToFileChange();
-
-            FilterCommand.RaiseCanExecuteChanged();
-            if (CanFilter("0")) { await FilterAsync("0"); }
-            Status = Messages.Status_FileLoaded;
+            if (day.Count <= 0) { CurrentDay = Messages.Label_NoDate; }
+            else if (day.Count == 1) { CurrentDay = string.Format(Messages.Label_CurrentDate, day[0].ToString("dd-MMM-yyyy")); }
+            else { CurrentDay = Messages.Label_MultipleDates; }
         }
 
         private void SetItemsCount() => StatusItemsCount = string.Format(Messages.Status_xxItems, Logs.Count);
@@ -304,6 +319,12 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private void SetLoading() => Status = Messages.Status_Loading;
 
         private void SetReady() => Status = Messages.Status_Ready;
+
+        private void SetStatusBar()
+        {
+            SetItemsCount();
+            SetCurrentDay();
+        }
 
         #endregion Methods
     }

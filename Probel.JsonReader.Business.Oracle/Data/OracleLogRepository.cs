@@ -1,7 +1,9 @@
 ﻿using Dapper;
 using Oracle.ManagedDataAccess.Client;
+using Probel.JsonReader.Business.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Probel.JsonReader.Business.Oracle.Data
 {
@@ -15,10 +17,33 @@ namespace Probel.JsonReader.Business.Oracle.Data
 
         #region Methods
 
-        public override IEnumerable<LogModel> GetAllLogs()
+        public override IEnumerable<LogModel> Filter(IEnumerable<string> categories, DateTime day, IFilter filter)
         {
-            CacheLogs();
-            return LogCache;
+            var sql = @"
+                select loglevel  as ""Level""
+                     , logsource as Logger
+                     , message   as Message
+                     , logtime   as Time
+                from app_log
+                where trunc(logtime) = trunc(:day)
+                order by logtime desc";
+
+
+            using (var c = new OracleConnection(_connectionString))
+            {
+                var result = c.Query<LogModel>(sql, new { day });
+
+                if ((categories?.Count() ?? 0) > 0)
+                {
+                    var levels = GetLevels(filter);
+                    result = (from l in result
+                              where categories.Contains(l.Logger)
+                                 && levels.Contains(l.Level)
+                              select l).ToList();
+                }
+
+                return result;
+            }
         }
 
         public override IEnumerable<string> GetCategories()
@@ -40,12 +65,18 @@ namespace Probel.JsonReader.Business.Oracle.Data
                     select distinct trunc(logtime)
                     from app_log
                     where trunc(logtime) > trunc(sysdate - 60)
-                    order by trunc(logtime)";
+                    order by trunc(logtime) desc";
             using (var c = new OracleConnection(_connectionString))
             {
                 var result = c.Query<DateTime>(sql);
                 return result;
             }
+        }
+
+        public override IEnumerable<LogModel> GetLogs()
+        {
+            CacheLogs();
+            return LogCache;
         }
 
         public override string GetSource() => _connectionString;
@@ -60,7 +91,7 @@ namespace Probel.JsonReader.Business.Oracle.Data
                      , message   as Message
                      , logtime   as Time
                 from app_log
-                where trunc(logtime) >= trunc(sysdate - 1)";
+                where trunc(logtime) >= trunc(sysdate)";
 
             using (var c = new OracleConnection(_connectionString))
             {

@@ -14,11 +14,13 @@ namespace Probel.JsonReader.Business
 
         IEnumerable<LogModel> Filter(IEnumerable<string> categories, decimal minutes, IFilter filter);
 
-        IEnumerable<LogModel> GetAllLogs();
+        IEnumerable<LogModel> Filter(IEnumerable<string> categories, DateTime day, IFilter filters);
 
         IEnumerable<string> GetCategories();
 
         IEnumerable<DateTime> GetDays();
+
+        IEnumerable<LogModel> GetLogs();
 
         string GetSource();
 

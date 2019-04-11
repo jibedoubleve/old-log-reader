@@ -47,7 +47,7 @@
       <Link>Properties\Version.cs</Link>
     </Compile>
     <Compile Include="Data\IFilter.cs" />
-    <Compile Include="Exception\InvalidPathException.cs" />
+    <Compile Include="Exceptions\InvalidPathException.cs" />
     <Compile Include="ILogRepository.cs" />
     <Compile Include="ILogRepositoryFactory.cs" />
     <Compile Include="LogModel.cs" />

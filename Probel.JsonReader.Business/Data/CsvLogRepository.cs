@@ -59,8 +59,9 @@ namespace Probel.JsonReader.Business.Data
         {
             if (LogCache == null) { return new List<string>(); }
             var result = (from m in LogCache
+                          where !string.IsNullOrEmpty(m.Logger)
                           orderby m.Logger
-                          select string.IsNullOrEmpty(m.Logger) ? "<Empty>" : m.Logger).Distinct()
+                          select m.Logger).Distinct()
                                           .ToList();
             return result;
         }

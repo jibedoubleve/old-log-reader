@@ -41,7 +41,7 @@ namespace Probel.JsonReader.Business.Oracle.Data
                                  && levels.Contains(l.Level)
                               select l).ToList();
                 }
-
+                LogCache = result;
                 return result;
             }
         }

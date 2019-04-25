@@ -66,7 +66,8 @@ namespace Probel.JsonReader.Business
                 LogCache = GetLogs();
                 result = LogCache;
             }
-            else if (categories.Count() == 0) { result = LogCache.ToList(); }
+
+            if (categories.Count() == 0) { result = LogCache.ToList(); }
             else
             {
                 result = (from m in LogCache
@@ -93,20 +94,18 @@ namespace Probel.JsonReader.Business
                 LogCache = GetLogs();
                 result = LogCache;
             }
-            else if ((categories?.Count() ?? 0) == 0) { result = LogCache; }
-            else
-            {
-                result = (from l in LogCache
-                          where categories.Contains(l.Logger)
-                             && levels.Contains(l.Level)
-                             && (now - l.Time).TotalSeconds <= seconds
-                          select l)
-                              .ToList();
-            }
 
-            return (filter.IsSortAscending)
-                ? result.OrderBy(e => e.Time)
-                : result.OrderByDescending(e => e.Time);
+            var hasCategories = (categories?.Count() ?? 0) > 0;
+            result = (from l in LogCache
+                      where (hasCategories ? categories.Contains(l.Logger) : true)
+                            && levels.Contains(l.Level)
+                            && (now - l.Time).TotalSeconds <= seconds
+                      select l);
+
+            result = (filter.IsSortAscending)
+                ? result.OrderBy(e => e.Time).ToList()
+                : result.OrderByDescending(e => e.Time).ToList();
+            return result;
         }
 
         public abstract IEnumerable<LogModel> Filter(IEnumerable<string> categories, DateTime day, IFilter filters);

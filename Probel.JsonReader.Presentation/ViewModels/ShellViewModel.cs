@@ -185,6 +185,13 @@ namespace Probel.JsonReader.Presentation.ViewModels
                 Title = lastFile;
                 _loadFailed = false;
             }
+            else if(Settings.RepositoryType == RepositoryType.OracleDatabase)
+            {
+                _logger.Debug($"Repository is Oracle Database. Let user loading it manually.");
+                Title = lastFile.ToReadableCString();
+                LogRepository.Setup(lastFile) ;
+                _loadFailed = false;
+            }
             else
             {
                 _logger.Warn($"Cannot load last opened file. Path: '{(lastFile ?? "<empty>")}'");

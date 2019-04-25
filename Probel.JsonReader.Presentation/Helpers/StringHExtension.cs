@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace Probel.JsonReader.Presentation.Helpers
 {
-    public static class StringHExtension
+    public static class StringExtension
     {
         public static string ToReadableCString(this string input)
         {

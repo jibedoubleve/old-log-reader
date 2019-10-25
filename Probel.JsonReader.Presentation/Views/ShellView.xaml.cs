@@ -3,6 +3,8 @@ using Probel.JsonReader.Presentation.Helpers;
 using Probel.JsonReader.Presentation.Properties;
 using Probel.JsonReader.Presentation.Services;
 using Probel.JsonReader.Presentation.ViewModels;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -18,6 +20,7 @@ namespace Probel.JsonReader.Presentation.Views
     {
         #region Fields
 
+        private const string UNSELECT_ALL = "unselect_all";
         private readonly ILogService _logger;
 
         #endregion Fields
@@ -41,13 +44,33 @@ namespace Probel.JsonReader.Presentation.Views
 
         #region Methods
 
+
+        private void OnUnselectAllCategories(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem)
+            {
+                var categories = new List<string>();
+                ViewModel.RefillCategories(categories);
+                ViewModel.FilterCommand.TryExecute(ViewModel.FilterMinutes.ToString());
+
+                foreach (var menu in _menuCategories.Items)
+                {
+                    if (menu is MenuItem mi) { mi.IsChecked = false; }
+                }
+            }
+        }
+
         private void OnCategoryClick(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem mi)
             {
                 mi.IsChecked = !mi.IsChecked;
 
-                var categories = (from m in _menuCategories.Items.Cast<MenuItem>()
+                var collection = (from m in _menuCategories.Items.Cast<object>()
+                                  where m is MenuItem
+                                  select m).Cast<MenuItem>().ToList();
+
+                var categories = (from m in collection
                                   where m.IsChecked == true
                                   select (string)m.Header).ToList();
 
@@ -151,6 +174,7 @@ namespace Probel.JsonReader.Presentation.Views
         private void RefreshCategories()
         {
             _menuCategories.Items.Clear();
+
             var categories = ViewModel.GetCategories();
 
             for (var i = 0; i < categories.Count(); i++)
@@ -164,6 +188,19 @@ namespace Probel.JsonReader.Presentation.Views
 
                 _menuCategories.Items.Insert(i, btn);
             }
+
+            _menuCategories.Items.Add(new Separator());
+            _menuCategories.Items.Add(BuildUnselectAll());
+        }
+        private MenuItem BuildUnselectAll()
+        {
+            var btn = new MenuItem()
+            {
+                Header = "Unselect all",
+                IsChecked = false,
+            };
+            btn.Click += OnUnselectAllCategories;
+            return btn;
         }
 
         private void RefreshFileHistory()

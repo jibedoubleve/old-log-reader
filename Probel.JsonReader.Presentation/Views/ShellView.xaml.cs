@@ -3,11 +3,11 @@ using Probel.JsonReader.Presentation.Helpers;
 using Probel.JsonReader.Presentation.Properties;
 using Probel.JsonReader.Presentation.Services;
 using Probel.JsonReader.Presentation.ViewModels;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -31,6 +31,7 @@ namespace Probel.JsonReader.Presentation.Views
         {
             _logger = logger;
             InitializeComponent();
+            _encodingLabel.Content = _menuIsWindows1252.Header;
         }
 
         #endregion Constructors
@@ -38,26 +39,29 @@ namespace Probel.JsonReader.Presentation.Views
         #region Properties
 
         private string LastestFile { get; set; }
+
         private ShellViewModel ViewModel => DataContext as ShellViewModel;
 
         #endregion Properties
 
         #region Methods
 
-
-        private void OnUnselectAllCategories(object sender, RoutedEventArgs e)
+        private MenuItem BuildUnselectAll()
         {
-            if (sender is MenuItem)
+            var btn = new MenuItem()
             {
-                var categories = new List<string>();
-                ViewModel.RefillCategories(categories);
-                ViewModel.FilterCommand.TryExecute(ViewModel.FilterMinutes.ToString());
+                Header = "Unselect all",
+                IsChecked = false,
+            };
+            btn.Click += OnUnselectAllCategories;
+            return btn;
+        }
 
-                foreach (var menu in _menuCategories.Items)
-                {
-                    if (menu is MenuItem mi) { mi.IsChecked = false; }
-                }
-            }
+        private Encoding GetEncoding()
+        {
+            if (_menuIsUtf8.IsChecked) { return Encoding.UTF8; }
+            else if (_menuIsWindows1252.IsChecked) { return Encoding.GetEncoding("Windows-1252"); }
+            else { return Encoding.UTF8; }
         }
 
         private void OnCategoryClick(object sender, RoutedEventArgs e)
@@ -81,6 +85,25 @@ namespace Probel.JsonReader.Presentation.Views
         }
 
         private void OnClickHistory(object sender, RoutedEventArgs e) => Refresh();
+
+        private void OnEncodingClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem item)
+            {
+                var value = item.IsChecked;
+
+                foreach (MenuItem i in _menuEncoding.Items)
+                {
+                    if (i == sender) { i.IsChecked = !value; }
+                    else { i.IsChecked = value; }
+                }
+            }
+        }
+
+        private void OnEncodingSelection(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem mi) { _encodingLabel.Content = mi.Header; }
+        }
 
         private void OnFileMenuOpenMenu(object sender, RoutedEventArgs e)
         {
@@ -133,9 +156,24 @@ namespace Probel.JsonReader.Presentation.Views
             }
         }
 
+        private void OnUnselectAllCategories(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem)
+            {
+                var categories = new List<string>();
+                ViewModel.RefillCategories(categories);
+                ViewModel.FilterCommand.TryExecute(ViewModel.FilterMinutes.ToString());
+
+                foreach (var menu in _menuCategories.Items)
+                {
+                    if (menu is MenuItem mi) { mi.IsChecked = false; }
+                }
+            }
+        }
+
         private async void OnWindowLoad(object sender, RoutedEventArgs e)
         {
-            await ViewModel.Load();
+            await ViewModel.Load(GetEncoding());
             Refresh();
         }
 
@@ -145,7 +183,7 @@ namespace Probel.JsonReader.Presentation.Views
             {
                 LastestFile = path;
                 ViewModel.Title = path;
-                await ViewModel.OpenFileAsync(path);
+                await ViewModel.OpenFileAsync(path, GetEncoding());
                 Refresh();
             }
             else
@@ -191,16 +229,6 @@ namespace Probel.JsonReader.Presentation.Views
 
             _menuCategories.Items.Add(new Separator());
             _menuCategories.Items.Add(BuildUnselectAll());
-        }
-        private MenuItem BuildUnselectAll()
-        {
-            var btn = new MenuItem()
-            {
-                Header = "Unselect all",
-                IsChecked = false,
-            };
-            btn.Click += OnUnselectAllCategories;
-            return btn;
         }
 
         private void RefreshFileHistory()

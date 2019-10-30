@@ -1,10 +1,12 @@
 ﻿using CsvHelper;
+using CsvHelper.Configuration;
 using Probel.JsonReader.Business.Exception;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 
 namespace Probel.JsonReader.Business.Data
@@ -12,9 +14,10 @@ namespace Probel.JsonReader.Business.Data
     public class LogRepository : ILogRepository
     {
         #region Methods
-
-        public IEnumerable<LogModel> GetAllLogs(string path)
+        private Encoding _encoding;
+        public IEnumerable<LogModel> GetAllLogs(string path, Encoding encoding = null)
         {
+            _encoding = encoding ?? Encoding.UTF8;
             var records = new List<LogModel>();
 
             if (string.IsNullOrEmpty(path)) { throw new InvalidPathException(); }
@@ -49,9 +52,9 @@ namespace Probel.JsonReader.Business.Data
         {
             List<LogModel> records;
             using (var stream = File.OpenRead(path))
-            using (var reader = new StreamReader(stream))
+            using (var reader = new StreamReader(stream, _encoding))
+            using (var csv = Build(reader))
             {
-                var csv = Build(reader);
                 records = csv.GetRecords<LogModel>().ToList();
             }
 

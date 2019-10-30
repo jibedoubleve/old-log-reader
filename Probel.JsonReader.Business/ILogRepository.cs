@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace Probel.JsonReader.Business
 {
@@ -6,8 +7,8 @@ namespace Probel.JsonReader.Business
     {
         #region Methods
 
-        IEnumerable<LogModel> GetAllLogs(string path);
-        
+        IEnumerable<LogModel> GetAllLogs(string path, Encoding encoding = null);
+
         #endregion Methods
     }
 }

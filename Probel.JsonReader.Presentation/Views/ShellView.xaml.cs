@@ -97,6 +97,8 @@ namespace Probel.JsonReader.Presentation.Views
                     if (i == sender) { i.IsChecked = !value; }
                     else { i.IsChecked = value; }
                 }
+
+                ViewModel.FileEncoding = GetEncoding();
             }
         }
 
@@ -183,7 +185,9 @@ namespace Probel.JsonReader.Presentation.Views
             {
                 LastestFile = path;
                 ViewModel.Title = path;
-                await ViewModel.OpenFileAsync(path, GetEncoding());
+
+                ViewModel.FileEncoding = GetEncoding();
+                await ViewModel.OpenFileAsync(path);
                 Refresh();
             }
             else

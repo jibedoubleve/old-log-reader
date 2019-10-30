@@ -12,6 +12,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -52,7 +53,6 @@ namespace Probel.JsonReader.Presentation.ViewModels
             LogRepository = logRepository;
             DefaultDirectory = Environment.ExpandEnvironmentVariables(DEFAULT_DIRECTORY);
 
-            OpenCommand = commandBuilder.BuildAsyncCommand<string>(OpenAsync, CanOpen);
             FilterCommand = commandBuilder.BuildAsyncCommand<string>(FilterAsync, CanFilter);
         }
 
@@ -126,15 +126,14 @@ namespace Probel.JsonReader.Presentation.ViewModels
                 : string.Empty;
         }
 
-        public async Task Load()
+        public async Task Load(Encoding encoding)
         {
             var lastFile = GetLastFile();
             if (File.Exists(lastFile))
             {
                 _logger.Debug($"Load last opened file. Path: '{lastFile}'");
-                await OpenAsync(lastFile);
+                await OpenAsync(lastFile, encoding);
                 Title = lastFile;
-                //RaisePropertyChanged(nameof(Title));
             }
             else { _logger.Warn($"Cannot load last opened file. Path: '{(lastFile ?? "<empty>")}'"); }
         }
@@ -149,7 +148,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         internal IEnumerable<string> GetCategories() => BufferLogs.GetCategories();
 
-        internal async Task OpenFileAsync(string path) => await Task.Run(() => OpenAsync(path));
+        internal async Task OpenFileAsync(string path, Encoding encoding) => await Task.Run(() => OpenAsync(path, encoding));
 
         private void AddFileInHistory(string filePath)
         {
@@ -167,12 +166,6 @@ namespace Probel.JsonReader.Presentation.ViewModels
             return isNumber && hasLogs;
         }
 
-        private bool CanOpen(string filePath)
-        {
-            var notEmptyPath = !string.IsNullOrEmpty(filePath);
-            var exist = File.Exists(filePath);
-            return notEmptyPath && exist;
-        }
 
         private void FillLogs(IEnumerable<LogModel> models)
         {
@@ -220,12 +213,12 @@ namespace Probel.JsonReader.Presentation.ViewModels
             Status = Messages.Status_FileChanged + $" - [{DateTime.Now.ToLongTimeString()}]";
         }
 
-        private async Task OpenAsync(string filePath)
+        private async Task OpenAsync(string filePath, Encoding encoding)
         {
             AddFileInHistory(filePath);
             FilterMinutes = 0;
             FilePath = filePath;
-            BufferLogs = await Task.Run(() => LogRepository.GetAllLogs(filePath));
+            BufferLogs = await Task.Run(() => LogRepository.GetAllLogs(filePath, encoding));
             RefillCategories(GetCategories());
             ListenToFileChange();
 

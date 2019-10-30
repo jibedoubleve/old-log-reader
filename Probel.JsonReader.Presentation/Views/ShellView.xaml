@@ -8,6 +8,7 @@
     xmlns:m="clr-namespace:Probel.JsonReader.Presentation.Properties"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"
+    x:Name="_self"
     Title="{Binding Title}"
     Width="525"
     Height="350"
@@ -38,6 +39,18 @@
                     x:Name="_menuHistory"
                     Click="OnClickHistory"
                     Header="{x:Static m:Messages.Menu_File_History}" />
+                <Separator />
+                <MenuItem x:Name="_menuEncoding" Header="Encoding">
+                    <MenuItem
+                        x:Name="_menuIsWindows1252"
+                        Click="OnEncodingClick"
+                        Header="Windows 1252"
+                        IsChecked="True" />
+                    <MenuItem
+                        x:Name="_menuIsUtf8"
+                        Click="OnEncodingClick"
+                        Header="UTF8" />
+                </MenuItem>
                 <Separator />
                 <MenuItem Click="OnFileMenuQuitMenu" Header="{x:Static m:Messages.Menu_File_Quit}" />
             </MenuItem>
@@ -367,6 +380,17 @@
                         </Style.Triggers>
                     </Style>
                 </StatusBarItem.Style>
+            </StatusBarItem>
+            <Separator Margin="5,3,5,3" DockPanel.Dock="Right" />
+            <StatusBarItem HorizontalAlignment="Right" DockPanel.Dock="Right">
+                <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                    <iconPacks:PackIconOcticons
+                        Width="15"
+                        Height="15"
+                        VerticalAlignment="Center"
+                        Kind="FileCode" />
+                    <Label x:Name="_encodingLabel" />
+                </StackPanel>
             </StatusBarItem>
         </StatusBar>
     </Grid>

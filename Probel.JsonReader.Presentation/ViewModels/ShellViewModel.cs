@@ -22,13 +22,13 @@ namespace Probel.JsonReader.Presentation.ViewModels
     {
         #region Fields
 
-        public readonly string DefaultDirectory;
         private const string DEFAULT_DIRECTORY = @"%appdata%\Probel\Perdeval\Logs\";
         private const string TITLE_PREFIX = "Log reader";
         private readonly IFormatProvider _formatProvider = new CultureInfo("en-US");
         private readonly ILogService _logger;
         private readonly ILogRepository LogRepository;
         private ObservableCollection<string> _categories = new ObservableCollection<string>();
+        private Encoding _fileEncoding = Encoding.UTF8;
         private decimal _filterMinutes = 0;
         private ObservableCollection<LogModel> _logs = new ObservableCollection<LogModel>();
         private SettingsViewModel _settings;
@@ -37,8 +37,8 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private string _title = TITLE_PREFIX;
         private string _version;
         private string FilePath;
-
         private FileSystemWatcher FileWatcher;
+        public readonly string DefaultDirectory;
 
         #endregion Fields
 
@@ -60,10 +60,18 @@ namespace Probel.JsonReader.Presentation.ViewModels
 
         #region Properties
 
+        private IEnumerable<LogModel> BufferLogs { get; set; }
+
         public ObservableCollection<string> Categories
         {
             get => _categories;
             set => SetProperty(ref _categories, value, nameof(Categories));
+        }
+
+        public Encoding FileEncoding
+        {
+            get => _fileEncoding;
+            set => SetProperty(ref _fileEncoding, value, nameof(FileEncoding));
         }
 
         public ICommand FilterCommand { get; }
@@ -113,42 +121,9 @@ namespace Probel.JsonReader.Presentation.ViewModels
             set => SetProperty(ref _version, value, nameof(Version));
         }
 
-        private IEnumerable<LogModel> BufferLogs { get; set; }
-
         #endregion Properties
 
         #region Methods
-
-        public string GetLastFile()
-        {
-            return (Settings.FileHistory.Count > 0)
-                ? Settings.FileHistory.OrderBy(e => e).Last()
-                : string.Empty;
-        }
-
-        public async Task Load(Encoding encoding)
-        {
-            var lastFile = GetLastFile();
-            if (File.Exists(lastFile))
-            {
-                _logger.Debug($"Load last opened file. Path: '{lastFile}'");
-                await OpenAsync(lastFile, encoding);
-                Title = lastFile;
-            }
-            else { _logger.Warn($"Cannot load last opened file. Path: '{(lastFile ?? "<empty>")}'"); }
-        }
-
-        public void RefillCategories(IEnumerable<string> categories)
-        {
-            Categories.Clear();
-            Categories.AddRange(categories);
-        }
-
-        internal void FilterCategories(IEnumerable<string> categories) => FillLogs(BufferLogs.Filter(categories, Settings));
-
-        internal IEnumerable<string> GetCategories() => BufferLogs.GetCategories();
-
-        internal async Task OpenFileAsync(string path, Encoding encoding) => await Task.Run(() => OpenAsync(path, encoding));
 
         private void AddFileInHistory(string filePath)
         {
@@ -165,7 +140,6 @@ namespace Probel.JsonReader.Presentation.ViewModels
             var hasLogs = BufferLogs != null && BufferLogs.Count() != 0;
             return isNumber && hasLogs;
         }
-
 
         private void FillLogs(IEnumerable<LogModel> models)
         {
@@ -208,17 +182,17 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private async void OnFileChanged(object sender, FileSystemEventArgs e)
         {
             FilterCommand.RaiseCanExecuteChanged();
-            BufferLogs = await Task.Run(() => LogRepository.GetAllLogs(FilePath));
+            BufferLogs = await Task.Run(() => LogRepository.GetAllLogs(FilePath, FileEncoding));
             FillLogs(BufferLogs.Filter(FilterMinutes, Settings).Filter(Categories, Settings));
             Status = Messages.Status_FileChanged + $" - [{DateTime.Now.ToLongTimeString()}]";
         }
 
-        private async Task OpenAsync(string filePath, Encoding encoding)
+        private async Task OpenAsync(string filePath)
         {
             AddFileInHistory(filePath);
             FilterMinutes = 0;
             FilePath = filePath;
-            BufferLogs = await Task.Run(() => LogRepository.GetAllLogs(filePath, encoding));
+            BufferLogs = await Task.Run(() => LogRepository.GetAllLogs(filePath, FileEncoding));
             RefillCategories(GetCategories());
             ListenToFileChange();
 
@@ -228,6 +202,38 @@ namespace Probel.JsonReader.Presentation.ViewModels
         }
 
         private void SetItemsCount() => StatusItemsCount = string.Format(Messages.Status_xxItems, Logs.Count);
+
+        internal void FilterCategories(IEnumerable<string> categories) => FillLogs(BufferLogs.Filter(categories, Settings));
+
+        internal IEnumerable<string> GetCategories() => BufferLogs.GetCategories();
+
+        internal async Task OpenFileAsync(string path) => await Task.Run(() => OpenAsync(path));
+
+        public string GetLastFile()
+        {
+            return (Settings.FileHistory.Count > 0)
+                ? Settings.FileHistory.OrderBy(e => e).Last()
+                : string.Empty;
+        }
+
+        public async Task Load(Encoding encoding)
+        {
+            var lastFile = GetLastFile();
+            if (File.Exists(lastFile))
+            {
+                _logger.Debug($"Load last opened file. Path: '{lastFile}'");
+
+                await OpenAsync(lastFile);
+                Title = lastFile;
+            }
+            else { _logger.Warn($"Cannot load last opened file. Path: '{(lastFile ?? "<empty>")}'"); }
+        }
+
+        public void RefillCategories(IEnumerable<string> categories)
+        {
+            Categories.Clear();
+            Categories.AddRange(categories);
+        }
 
         #endregion Methods
     }

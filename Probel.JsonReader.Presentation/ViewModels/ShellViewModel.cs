@@ -28,7 +28,7 @@ namespace Probel.JsonReader.Presentation.ViewModels
         private readonly ILogService _logger;
         private readonly ILogRepository LogRepository;
         private ObservableCollection<string> _categories = new ObservableCollection<string>();
-        private Encoding _fileEncoding = Encoding.UTF8;
+        private Encoding _fileEncoding = Encoding.GetEncoding("Windows-1252");
         private decimal _filterMinutes = 0;
         private ObservableCollection<LogModel> _logs = new ObservableCollection<LogModel>();
         private SettingsViewModel _settings;
